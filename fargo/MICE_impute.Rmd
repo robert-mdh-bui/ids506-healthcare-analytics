@@ -1,0 +1,94 @@
+---
+title: 'Imputation on Time Series Missing Data - MICE'
+author: "Robert Duc Bui - mbui7@uic.edu - 660809303"
+subtitle: 'IDS.506: Fargo Health Group Assignment Technical Appendix Rmd Notebook 2'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(lubridate)
+library(Cairo)
+library(mice)
+library(imputeTS)
+```
+
+```{r eval=FALSE, include=TRUE}
+library(tidyverse)
+library(tidymodels)
+library(lubridate)
+library(Cairo)
+library(mice)
+library(imputeTS)
+```
+
+```{r}
+raw_ts <- read_csv("data/raw_ts.csv",
+                   show_col_types = FALSE) %>% 
+  transmute(
+    y = `Incoming Examinations`,
+    Year = Year,
+    Month = Month
+  )
+```
+
+```{r}
+# MICE w/ 50 iterations of 50 imputations
+obj_mice <- raw_ts %>% 
+  mice(m = 50,
+       maxit = 50,
+       seed = 8675309,
+       printFlag = FALSE)
+
+df_mice <- obj_mice %>% complete(1)
+
+df_mice
+```
+
+```{r}
+ts <- raw_ts %>% 
+  transmute(
+    y = y, 
+    datetime = paste(Year,Month,"01",sep="-") %>% ymd()
+  ) %>% select(y) %>% 
+  ts(start = c(2006,1),
+     end   = c(2013,12),
+     frequency = 12)
+
+ts_mice <- df_mice %>% 
+  transmute(
+    y = y, 
+    datetime = paste(Year,Month,"01",sep="-") %>% ymd()
+  ) %>% select(y) %>% 
+  ts(start = c(2006,1),
+     end   = c(2013,12),
+     frequency = 12)
+
+ggplot_na_imputations(x_with_na = ts,
+                      x_with_imputations = ts_mice,
+                      title = "Imputed Values w/ MICE",
+                      theme = ggplot2::theme_minimal())
+```
+
+
+```{r}
+# Dotplot of imputed (red) vs real (blue) per year
+xyplot(obj_mice, y ~ Year, pch = 18, cex = 2)
+
+# Density plot of imputed data
+densityplot(obj_mice, n = 96)
+
+```
+
+
+```{r}
+df_mice %>% 
+  rename(
+    `Incoming Examinations` = y
+  ) %>% 
+  write_csv("data/ts_mice.csv")
+```
+

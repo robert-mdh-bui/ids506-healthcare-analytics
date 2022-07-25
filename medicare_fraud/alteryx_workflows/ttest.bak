@@ -1,0 +1,341 @@
+<?xml version="1.0"?>
+<AlteryxDocument yxmdVer="2021.4">
+  <Nodes>
+    <Node ToolID="1">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="54" y="438" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <File RecordLimit="" SearchSubDirs="False" FileFormat="0" OutputFileName="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv</File>
+          <FormatSpecificOptions>
+            <HeaderRow>True</HeaderRow>
+            <IgnoreErrors>False</IgnoreErrors>
+            <AllowShareWrite>False</AllowShareWrite>
+            <ImportLine>1</ImportLine>
+            <FieldLen>254</FieldLen>
+            <SingleThreadRead>False</SingleThreadRead>
+            <IgnoreQuotes>DoubleQuotes</IgnoreQuotes>
+            <Delimeter>,</Delimeter>
+            <QuoteRecordBreak>False</QuoteRecordBreak>
+            <CodePage>28591</CodePage>
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>physician_level_aggregate.csv</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field name="National Provider Identifier" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Gender" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Provider Type" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Count_HCPCS" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Final_amount_received" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Excess_amount_claimed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Number of Medicare Beneficiaries" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Number of Medicare Beneficiary/Day Services" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Sum_Total_amount_claimed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Sum_Total_amount_paid" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Sum_Total_amount_allowed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Fraud_Label" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Min_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Max_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Min_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Max_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="2">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect">
+        <Position x="174" y="438" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <OrderChanged value="False" />
+          <CommaDecimal value="False" />
+          <SelectFields>
+            <SelectField field="Count_HCPCS" selected="True" type="Int32" size="4" />
+            <SelectField field="Avg_Payout_Ratio" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Allowance_Ratio" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Final_amount_received" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Excess_amount_claimed" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Number of Medicare Beneficiaries" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Number of Medicare Beneficiary/Day Services" selected="True" type="Float" size="4" />
+            <SelectField field="Sum_Total_amount_claimed" selected="True" type="Float" size="4" />
+            <SelectField field="Sum_Total_amount_paid" selected="True" type="Float" size="4" />
+            <SelectField field="Sum_Total_amount_allowed" selected="True" type="Float" size="4" />
+            <SelectField field="Min_Payout_Ratio" selected="True" type="Float" size="4" />
+            <SelectField field="Max_Payout_Ratio" selected="True" type="Float" size="4" />
+            <SelectField field="Min_Allowance_Ratio" selected="True" type="Float" size="4" />
+            <SelectField field="Max_Allowance_Ratio" selected="True" type="Float" size="4" />
+            <SelectField field="*Unknown" selected="True" />
+          </SelectFields>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxSelect" />
+    </Node>
+    <Node ToolID="23">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="54" y="546" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Layout>
+            <View1>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="24">
+      <GuiSettings>
+        <Position x="306" y="6" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="response">Count_HCPCS</Value>
+          <Value name="group.id">Fraud_Label</Value>
+          <Value name="control.level" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Test_of_Means.yxmc" />
+    </Node>
+    <Node ToolID="25">
+      <GuiSettings>
+        <Position x="306" y="78" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="response">Avg_Payout_Ratio</Value>
+          <Value name="group.id">Fraud_Label</Value>
+          <Value name="control.level" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Test_of_Means.yxmc" />
+    </Node>
+    <Node ToolID="26">
+      <GuiSettings>
+        <Position x="306" y="150" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="response">Avg_Allowance_Ratio</Value>
+          <Value name="group.id">Fraud_Label</Value>
+          <Value name="control.level" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Test_of_Means.yxmc" />
+    </Node>
+    <Node ToolID="27">
+      <GuiSettings>
+        <Position x="306" y="222" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="response">Avg_Final_amount_received</Value>
+          <Value name="group.id">Fraud_Label</Value>
+          <Value name="control.level" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Test_of_Means.yxmc" />
+    </Node>
+    <Node ToolID="28">
+      <GuiSettings>
+        <Position x="306" y="294" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="response">Avg_Excess_amount_claimed</Value>
+          <Value name="group.id">Fraud_Label</Value>
+          <Value name="control.level" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Test_of_Means.yxmc" />
+    </Node>
+    <Node ToolID="29">
+      <GuiSettings>
+        <Position x="306" y="366" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="response">Avg_Number of Medicare Beneficiaries</Value>
+          <Value name="group.id">Fraud_Label</Value>
+          <Value name="control.level" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Test_of_Means.yxmc" />
+    </Node>
+    <Node ToolID="30">
+      <GuiSettings>
+        <Position x="306" y="438" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="response">Avg_Number of Medicare Beneficiary/Day Services</Value>
+          <Value name="group.id">Fraud_Label</Value>
+          <Value name="control.level" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Test_of_Means.yxmc" />
+    </Node>
+  </Nodes>
+  <Connections>
+    <Connection>
+      <Origin ToolID="1" Connection="Output" />
+      <Destination ToolID="2" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="23" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="24" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="25" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="26" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="27" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="28" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="29" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="30" Connection="Input" />
+    </Connection>
+  </Connections>
+  <Properties>
+    <Memory default="True" />
+    <GlobalRecordLimit value="0" />
+    <TempFiles default="True" />
+    <Annotation on="True" includeToolName="False" />
+    <ConvErrorLimit value="10" />
+    <ConvErrorLimit_Stop value="False" />
+    <CancelOnError value="False" />
+    <DisableBrowse value="False" />
+    <EnablePerformanceProfiling value="False" />
+    <PredictiveToolsCodePage value="1252" />
+    <DisableAllOutput value="False" />
+    <ShowAllMacroMessages value="False" />
+    <ShowConnectionStatusIsOn value="True" />
+    <ShowConnectionStatusOnlyWhenRunning value="True" />
+    <ZoomLevel value="0" />
+    <LayoutType>Horizontal</LayoutType>
+    <MetaInfo>
+      <NameIsFileName value="True" />
+      <Name>ttest</Name>
+      <Description />
+      <RootToolName />
+      <ToolVersion />
+      <ToolInDb value="False" />
+      <CategoryName />
+      <SearchTags />
+      <Author />
+      <Company />
+      <Copyright />
+      <DescriptionLink actual="" displayed="" />
+      <Example>
+        <Description />
+        <File />
+      </Example>
+      <WorkflowId value="745317b4-6685-4bb7-adcd-a226a6f27a22" />
+      <Telemetry>
+        <PreviousWorkflowId value="ca03b05f-68e4-48ac-8643-225602b9e6ca" />
+        <OriginWorkflowId value="ca03b05f-68e4-48ac-8643-225602b9e6ca" />
+      </Telemetry>
+    </MetaInfo>
+    <Events>
+      <Enabled value="True" />
+    </Events>
+  </Properties>
+</AlteryxDocument>

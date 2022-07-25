@@ -1,0 +1,461 @@
+---
+title: "modeling"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Packages & Import
+
+```{r}
+setwd("G:/My Drive/academics/2122_uic_ms/2022_spring/ids506_health/prostate")
+
+library(tidyverse)
+library(tidymodels)
+library(textrecipes)
+library(patchwork)
+library(lubridate)
+library(tidytext)
+library(themis)
+library(vip)
+
+dat <- read_csv("data/training_data.csv") %>% 
+  rename(y = survival_7_years)
+```
+
+# Dealing with NAs & date
+
+```{r}
+dat_no_na <- dat %>% 
+  filter(
+    !is.na(weight),
+    !is.na(height),
+    !is.na(age),
+    !is.na(gleason_score),
+    !is.na(tumor_diagnosis),
+    !is.na(race)
+  ) %>% 
+  mutate(
+    psa_1_year           = case_when(is.na(psa_1_year)~0,),
+    tumor_1_year         = ifelse(is.na(tumor_1_year)==1,0,tumor_1_year),
+    family_history       = ifelse(is.na(family_history)==1,0,family_history),
+    first_degree_history = ifelse(is.na(first_degree_history)==1,0,first_degree_history),
+    previous_cancer      = ifelse(is.na(previous_cancer)==1,0,previous_cancer),
+    smoker               = ifelse(is.na(smoker)==1,0,smoker),
+    tea                  = ifelse(is.na(tea)==1,0,tea),
+    psa_diagnosis        = ifelse(is.na(psa_diagnosis)==1,0,psa_diagnosis)
+  ) %>% 
+  select(-c(id,tumor_6_months,psa_6_months)) %>% 
+  mutate(
+    # Replacing 00 date values with 01
+    zero_day = ifelse(str_detect(diagnosis_date,"00"),1,0),
+    diagnosis_date = ifelse(zero_day == 0,
+                            diagnosis_date,
+                            str_replace(diagnosis_date, "00","01")),
+    diagnosis_date = paste(diagnosis_date,"2021",sep="") %>% mdy() %>% yday()
+  ) %>% 
+  select(-zero_day) 
+```
+
+# Modeling
+
+## Converting types
+
+```{r}
+df <- dat_no_na %>% 
+  mutate(
+    race = race %>% factor(),
+    family_history = family_history %>% factor(),
+    first_degree_history = first_degree_history %>% factor(),
+    # Shortening groups
+    tea = case_when(tea == 0 ~ "0.wk",
+                    0 < tea & tea <= 2 ~ "2fewer.wk",
+                    2 < tea & tea <= 7 ~ "7fewer.wk",
+                    7 < tea ~ "7more.wk")
+  ) %>% 
+  mutate(y = y %>% factor())
+
+rm(dat,dat_no_na)
+```
+
+## Splitting
+
+```{r}
+set.seed(8675309)
+splits <- initial_split(df,
+                        prop = .8,
+                        strata = y)
+
+d.train <- training(splits)
+d.test  <- testing(splits)
+cv.fold <- vfold_cv(d.train, v = 4)
+
+```
+
+## Preprocessing Recipe
+
+```{r}
+recipe <- recipe(y~., data = d.train) %>% 
+  step_relevel(side,    ref_level = "left") %>% 
+  step_relevel(t_score, ref_level = "T1a") %>% 
+  step_relevel(n_score, ref_level = "N0") %>% 
+  step_relevel(m_score, ref_level = "M0") %>% 
+  step_relevel(stage,   ref_level = "I") %>% 
+  step_relevel(race,    ref_level = "4") %>% 
+  step_relevel(family_history, ref_level = "0") %>% 
+  step_relevel(first_degree_history, ref_level = "0") %>% 
+  step_relevel(tea,     ref_level = "0.wk") %>% 
+  step_tokenize(symptoms,options = list(strip_punct = T,
+                                        lowercase = T)) %>% 
+  step_tf(symptoms) %>% 
+  step_dummy(t_score,n_score,m_score,stage,race,family_history,first_degree_history,side,tea) %>% 
+  step_zv(all_numeric_predictors()) #
+
+recipe_normalised <- recipe %>% 
+  step_normalize(all_numeric_predictors())
+```
+
+## Preprocessing preview: on training data
+
+```{r}
+recipe %>% prep() %>% bake(d.train)
+```
+
+## Plain logreg (no tuning)
+
+```{r}
+model_glm <- 
+  logistic_reg() %>% 
+  set_engine("glm")
+
+wf_glm <- workflow() %>% 
+  add_model(model_glm) %>% 
+  add_recipe(recipe)
+
+fit_glm <- wf_glm %>% 
+  fit(d.train)
+
+tidy(fit_glm) %>% 
+  mutate(odds_ratio = round(exp(estimate),2)) %>% 
+  mutate(sig        = case_when(p.value <= .001 ~ "***",
+                                p.value <= .01 & p.value > 0.001 ~ "**",
+                                p.value <= .05 & p.value > 0.01 ~ "*")) %>% 
+  select(term, odds_ratio, p.value, sig) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(p.value)
+fit_glm_test <- wf_glm %>% last_fit(splits)
+
+preds_glm <- fit_glm_test %>% collect_predictions()
+
+preds_glm %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_glm %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  mutate(model = "base-GLM") %>% 
+  select(model, .metric,.estimate)
+```
+
+## Plain logreg (no tuning + some derived features)
+
+```{r}
+recipe_derived <- recipe(y~., data = d.train) %>% 
+  step_relevel(side,    ref_level = "left") %>%
+  step_relevel(t_score, ref_level = "T1a") %>% 
+  step_relevel(n_score, ref_level = "N0") %>% 
+  step_relevel(m_score, ref_level = "M0") %>% 
+  step_relevel(stage,   ref_level = "I") %>% 
+  step_relevel(race,    ref_level = "4") %>% 
+  step_relevel(family_history, ref_level = "0") %>% 
+  step_relevel(first_degree_history, ref_level = "0") %>% 
+  step_relevel(tea,     ref_level = "0.wk") %>%
+  step_tokenize(symptoms,options = list(strip_punct = T,
+                                        lowercase = T)) %>% 
+  step_tf(symptoms) %>% 
+  step_mutate(
+    bmi = 703*weight/(height)^2,
+    wgt_class = case_when(bmi < 18.5~"underweight",
+                          18.5 <= bmi & bmi < 25 ~ "normal",
+                          25.0 <= bmi & bmi < 30 ~ "overweight",
+                          30.0 <= bmi ~ "obese"
+                          ),
+  ) %>% 
+  step_relevel(wgt_class, ref_level = "normal") %>% 
+  step_mutate(psa_delta1   = psa_1_year - psa_diagnosis,
+              tumor_delta1 = tumor_1_year - tumor_diagnosis) %>% 
+  step_rm(
+    c(height,weight,bmi,
+      tumor_diagnosis,tumor_1_year,
+      psa_1_year,psa_diagnosis)
+  ) %>% 
+  step_dummy(side,t_score,n_score,m_score,stage,race,family_history,
+             first_degree_history,tea,wgt_class) %>% 
+  step_zv(all_numeric_predictors())
+
+recipe_derived %>% prep() %>% bake(d.train)
+
+model_glm <- 
+  logistic_reg() %>% 
+  set_engine("glm")
+
+wf_glm_derived <- workflow() %>% 
+  add_model(model_glm) %>% 
+  add_recipe(recipe_derived)
+
+fit_glm_derived <- wf_glm_derived %>% 
+  fit(d.train)
+
+tidy(fit_glm_derived) %>% 
+  mutate(odds_ratio = round(exp(estimate),2)) %>% 
+  mutate(sig        = case_when(p.value <= .001 ~ "***",
+                                p.value <= .01 & p.value > 0.001 ~ "**",
+                                p.value <= .05 & p.value > 0.01 ~ "*")) %>% 
+  select(term, odds_ratio, p.value, sig) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(p.value)
+
+fit_glm_derived_test <- wf_glm_derived %>% last_fit(splits)
+
+preds_glm_derived <- fit_glm_derived_test %>% collect_predictions()
+
+preds_glm_derived %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_glm_derived %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  mutate(model = "engineered-GLM") %>% 
+  select(model, .metric,.estimate)
+```
+
+## Elastic-Net
+
+```{r}
+model_glmnet_elastic <- 
+  logistic_reg(
+    penalty = tune(),
+    mixture = tune()
+  ) %>% 
+  set_engine("glmnet")
+
+wf_glmnet_elastic <- workflow() %>% 
+  add_model(model_glmnet_elastic) %>% 
+  add_recipe(recipe_normalised)
+
+grid_glmnet_elastic <- grid_regular(
+  penalty(),
+  mixture(),
+  levels = 6
+)
+```
+
+```{r eval=FALSE, include=TRUE}
+set.seed(8675309)
+tune_glmnet_elastic <- wf_glmnet_elastic %>% 
+  tune_grid(resamples = cv.fold,
+            grid = grid_glmnet_elastic,
+            control = control_grid(save_pred = T),
+            metrics = metric_set(accuracy))
+
+write_rds(tune_glmnet_elastic,"models/tuning/tune_glmnet_elastic.rds")
+```
+
+```{r}
+tune_glmnet_elastic <- read_rds("models/tuning/tune_glmnet_elastic.rds")
+
+best_glmnet_elastic <- tune_glmnet_elastic %>% 
+  select_best(metric = "accuracy")
+
+tune_glmnet_elastic %>% 
+  collect_metrics() %>% 
+  ggplot(aes(x = penalty,
+             y = mean,
+             col = mixture %>% factor())) +
+  geom_point()+
+  geom_line()+
+  labs(
+    y = "accuracy",
+    col = "Reg. Type"
+  )+
+  scale_x_log10()+
+  scale_color_viridis_d()
+
+lastfit_glmnet_elastic <- wf_glmnet_elastic %>% 
+  finalize_workflow(best_glmnet_elastic) %>% 
+  last_fit(splits) 
+
+lastfit_glmnet_elastic %>% 
+  extract_workflow() %>% 
+  tidy() %>% 
+  select(-penalty) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(desc(abs(estimate)))
+
+wf_glmnet_elastic %>% 
+  finalize_workflow(best_glmnet_elastic) %>% 
+  fit(data = d.train) %>%
+  pull_workflow_fit() %>%
+  vip(geom = "point")
+```
+
+## xgBoost
+
+```{r}
+model_xgboost <- 
+  boost_tree(
+    trees      = 1000,
+    tree_depth = tune(),
+    min_n      = tune(),
+    loss_reduction = tune(),
+    sample_size = tune(),
+    mtry       = tune(),
+    learn_rate = tune()
+  ) %>% 
+  set_engine("xgboost") %>% 
+  set_mode("classification")
+
+wf_xgboost <- workflow() %>% 
+  add_model(model_xgboost) %>% 
+  add_recipe(recipe_normalised)
+
+grid_xgboost <- grid_latin_hypercube(
+  tree_depth(),
+  min_n(),
+  loss_reduction(),
+  sample_size = sample_prop(),
+  finalize(mtry(),d.train),
+  learn_rate(),
+  size = 30
+)
+
+```
+
+```{r eval=FALSE, include=TRUE}
+set.seed(8675309)
+tune_xgboost <- wf_xgboost %>% 
+  tune_grid(resamples = cv.fold,
+            grid = grid_xgboost,
+            control = control_grid(save_pred = T),
+            metrics = metric_set(accuracy))
+
+write_rds(tune_xgboost,"models/tuning/tune_xgboost.rds")
+```
+
+```{r}
+tune_xgboost <- read_rds("models/tuning/tune_xgboost.rds")
+
+best_xgboost <- tune_xgboost %>% 
+  select_best(metric = "accuracy")
+
+tune_xgboost %>% 
+  collect_metrics() %>% 
+  select(mean,mtry:sample_size) %>% 
+  pivot_longer(mtry:sample_size,
+               values_to = "value",
+               names_to  = "parameter") %>% 
+  ggplot(aes(value, mean, color = parameter)) +
+  geom_point(alpha = 0.8, show.legend = FALSE) +
+  facet_wrap(~parameter, scales = "free_x") +
+  labs(x = NULL, y = "accuracy")
+
+lastfit_xgboost <- wf_xgboost %>% 
+  finalize_workflow(best_xgboost) %>% 
+  last_fit(splits) 
+
+wf_xgboost %>% 
+  finalize_workflow(best_xgboost) %>% 
+  fit(data = d.train) %>%
+  pull_workflow_fit() %>%
+  vip(geom = "point")
+```
+
+# Metrics
+
+```{r}
+preds_glm            <- fit_glm_test %>% collect_predictions()
+preds_glmnet_elastic <- lastfit_glmnet_elastic %>% collect_predictions()
+preds_xgboost        <- lastfit_xgboost %>% collect_predictions()
+preds_lsvm           <- lastfit_lsvm %>% collect_predictions()
+```
+
+```{r}
+preds_glm %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_glm %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  rbind(
+    preds_glm %>% 
+      f_meas(truth = y,
+             estimate = .pred_class,
+             event_level = "first")
+  )
+
+preds_glmnet_elastic %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_glmnet_elastic %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  rbind(
+    preds_glmnet_elastic %>% 
+      f_meas(truth = y,
+             estimate = .pred_class,
+             event_level = "first")
+  )
+
+preds_xgboost %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_xgboost %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  rbind(
+    preds_xgboost %>% 
+      f_meas(truth = y,
+             estimate = .pred_class,
+             event_level = "first")
+  )
+
+preds_lsvm %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_lsvm %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  rbind(
+    preds_lsvm %>% 
+      f_meas(truth = y,
+             estimate = .pred_class,
+             event_level = "first")
+  )
+```
+

@@ -1,0 +1,935 @@
+<?xml version="1.0"?>
+<AlteryxDocument yxmdVer="2021.4">
+  <Nodes>
+    <Node ToolID="1">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="102" y="270" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <File RecordLimit="" SearchSubDirs="False" FileFormat="0" OutputFileName="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv</File>
+          <FormatSpecificOptions>
+            <HeaderRow>True</HeaderRow>
+            <IgnoreErrors>False</IgnoreErrors>
+            <AllowShareWrite>False</AllowShareWrite>
+            <ImportLine>1</ImportLine>
+            <FieldLen>254</FieldLen>
+            <SingleThreadRead>False</SingleThreadRead>
+            <IgnoreQuotes>DoubleQuotes</IgnoreQuotes>
+            <Delimeter>,</Delimeter>
+            <QuoteRecordBreak>False</QuoteRecordBreak>
+            <CodePage>28591</CodePage>
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>physician_level_aggregate.csv</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field name="National Provider Identifier" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Gender" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Provider Type" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Count_HCPCS" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Final_amount_received" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Excess_amount_claimed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Number of Medicare Beneficiaries" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Number of Medicare Beneficiary/Day Services" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Sum_Total_amount_claimed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Sum_Total_amount_paid" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Sum_Total_amount_allowed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Fraud_Label" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Min_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Max_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Min_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Max_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="2">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect">
+        <Position x="198" y="270" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <OrderChanged value="True" />
+          <CommaDecimal value="False" />
+          <SelectFields>
+            <SelectField field="Avg_Allowance_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Excess_amount_claimed" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Final_amount_received" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Number of Medicare Beneficiaries" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Number of Medicare Beneficiary/Day Services" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Payout_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Count_HCPCS" selected="True" type="Int32" size="4" />
+            <SelectField field="Fraud_Label" selected="True" />
+            <SelectField field="Gender" selected="True" />
+            <SelectField field="Max_Allowance_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Max_Payout_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Min_Allowance_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Min_Payout_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="National Provider Identifier" selected="True" />
+            <SelectField field="Provider Type" selected="True" />
+            <SelectField field="Sum_Total_amount_allowed" selected="True" type="Double" size="8" />
+            <SelectField field="Sum_Total_amount_claimed" selected="True" type="Double" size="8" />
+            <SelectField field="Sum_Total_amount_paid" selected="True" type="Double" size="8" />
+            <SelectField field="*Unknown" selected="True" />
+          </SelectFields>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxSelect" />
+    </Node>
+    <Node ToolID="4">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="534" y="150" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <File RecordLimit="" SearchSubDirs="False" FileFormat="0" OutputFileName="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv</File>
+          <FormatSpecificOptions>
+            <HeaderRow>True</HeaderRow>
+            <IgnoreErrors>False</IgnoreErrors>
+            <AllowShareWrite>False</AllowShareWrite>
+            <ImportLine>1</ImportLine>
+            <FieldLen>254</FieldLen>
+            <SingleThreadRead>False</SingleThreadRead>
+            <IgnoreQuotes>DoubleQuotes</IgnoreQuotes>
+            <Delimeter>,</Delimeter>
+            <QuoteRecordBreak>False</QuoteRecordBreak>
+            <CodePage>28591</CodePage>
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>Test_data_fraud_claims.csv</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field name="National Provider Identifier" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Gender" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Provider Type" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Count_HCPCS" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Avg_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Min_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Max_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Avg_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Min_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Max_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Sum_Total_amount_claimed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Sum_Total_amount_paid" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Sum_Total_amount_allowed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Avg_Number of Medicare Beneficiary/Day Services" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Avg_Number of Medicare Beneficiaries" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Avg_Final_amount_received" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Avg_Excess_amount_claimed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+            <Field name="Fraud_Label" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\Test_data_fraud_claims.csv" type="V_String" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="5">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="654" y="90" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_19092_c40bfdf6099d4150ae529da5a4720b87_\Engine_18036_610e2880a0b846fd9af85458764a9399_.yxdb</TempFile>
+          <TempFileDataProfiling />
+          <Layout>
+            <ViewMode>LR</ViewMode>
+            <ViewSize value="40" />
+            <View1>
+              <DefaultTab>Profile</DefaultTab>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+            <View2>
+              <DefaultTab>Profile</DefaultTab>
+              <Hints />
+            </View2>
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="6">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="198" y="210" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_19092_c40bfdf6099d4150ae529da5a4720b87_\Engine_18036_80699766bc564561a7f896c1d4a93515_.yxdb</TempFile>
+          <TempFileDataProfiling />
+          <Layout>
+            <ViewMode>Single</ViewMode>
+            <ViewSize value="100" />
+            <View1>
+              <DefaultTab>Profile</DefaultTab>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+            <View2 />
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="7">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect">
+        <Position x="654" y="150" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <OrderChanged value="True" />
+          <CommaDecimal value="False" />
+          <SelectFields>
+            <SelectField field="Avg_Allowance_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Excess_amount_claimed" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Final_amount_received" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Number of Medicare Beneficiaries" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Number of Medicare Beneficiary/Day Services" selected="True" type="Double" size="8" />
+            <SelectField field="Avg_Payout_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Count_HCPCS" selected="True" type="Int32" size="4" />
+            <SelectField field="Fraud_Label" selected="True" />
+            <SelectField field="Gender" selected="True" />
+            <SelectField field="Max_Allowance_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Max_Payout_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Min_Allowance_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="Min_Payout_Ratio" selected="True" type="Double" size="8" />
+            <SelectField field="National Provider Identifier" selected="True" />
+            <SelectField field="Provider Type" selected="True" />
+            <SelectField field="Sum_Total_amount_allowed" selected="True" type="Double" size="8" />
+            <SelectField field="Sum_Total_amount_claimed" selected="True" type="Double" size="8" />
+            <SelectField field="Sum_Total_amount_paid" selected="True" type="Double" size="8" />
+            <SelectField field="*Unknown" selected="True" />
+          </SelectFields>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxSelect" />
+    </Node>
+    <Node ToolID="8">
+      <GuiSettings Plugin="Logistic_Regression">
+        <Position x="294" y="54" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="curPage">Home</Value>
+          <Value name="curTab">advanced</Value>
+          <Value name="lambda_1se">False</Value>
+          <Value name="lambda_min">True</Value>
+          <Value name="Model Name">GLM</Value>
+          <Value name="Y Var">Fraud_Label</Value>
+          <Value name="X Vars">Avg_Allowance_Ratio,Avg_Excess_amount_claimed,Avg_Final_amount_received,Avg_Number of Medicare Beneficiary/Day Services,Avg_Payout_Ratio,Count_HCPCS,Gender,Max_Allowance_Ratio,Max_Payout_Ratio,Min_Allowance_Ratio,Min_Payout_Ratio,Provider Type,Sum_Total_amount_allowed,Sum_Total_amount_claimed,Sum_Total_amount_paid</Value>
+          <Value name="Use Weights">False</Value>
+          <Value name="Weight Vec" />
+          <Value name="regularization">False</Value>
+          <Value name="alpha">0.5</Value>
+          <Value name="standardize_pred">False</Value>
+          <Value name="internal_cv">False</Value>
+          <Value name="nfolds">5</Value>
+          <Value name="lambda">lambda_min</Value>
+          <Value name="set_seed_internal_cv">False</Value>
+          <Value name="seed_internal_cv">1</Value>
+          <Value name="lambda_no_cv">0.5</Value>
+          <Value name="posClass">Yes</Value>
+          <Value name="Link">logit</Value>
+          <Value name="external_cv">False</Value>
+          <Value name="nfolds_external">5</Value>
+          <Value name="numberTrials">3</Value>
+          <Value name="stratified">False</Value>
+          <Value name="set_seed_external_cv">False</Value>
+          <Value name="external_seed_value">1</Value>
+          <Value name="graph.resolution">1x</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>GLM</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings Macro="Logistic_Regression/Supporting_Macros/Logistic_Regression.yxmc" EngineDll="Macro" EngineDllEntryPoint="Logistic_Regression/Supporting_Macros/Logistic_Regression.yxmc" />
+    </Node>
+    <Node ToolID="9">
+      <GuiSettings>
+        <Position x="294" y="198" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="model.name">xGB</Value>
+          <Value name="select.target">Fraud_Label</Value>
+          <Value name="select.predictors">Avg_Allowance_Ratio=True,Avg_Excess_amount_claimed=True,Avg_Final_amount_received=True,Avg_Number of Medicare Beneficiaries=False,Avg_Number of Medicare Beneficiary/Day Services=True,Avg_Payout_Ratio=True,Count_HCPCS=True,Fraud_Label=False,Gender=True,Max_Allowance_Ratio=True,Max_Payout_Ratio=True,Min_Allowance_Ratio=True,Min_Payout_Ratio=True,National Provider Identifier=False,Provider Type=True,Sum_Total_amount_allowed=True,Sum_Total_amount_claimed=True,Sum_Total_amount_paid=True</Value>
+          <Value name="use.weights">False</Value>
+          <Value name="select.weights">Avg_Allowance_Ratio</Value>
+          <Value name="marginal.plots">False</Value>
+          <Value name="plot.min.importance">2.5</Value>
+          <Value name="type.distribution">False</Value>
+          <Value name="type.continuous">False</Value>
+          <Value name="dist.gaussian">True</Value>
+          <Value name="dist.laplace">False</Value>
+          <Value name="dist.t">False</Value>
+          <Value name="t.df">4</Value>
+          <Value name="type.count">False</Value>
+          <Value name="type.binomial">True</Value>
+          <Value name="dist.bernoulli">True</Value>
+          <Value name="dist.adaboost">False</Value>
+          <Value name="type.multinomial">False</Value>
+          <Value name="n.trees">4000</Value>
+          <Value name="assess.cv">True</Value>
+          <Value name="num.folds">5</Value>
+          <Value name="n.cores">1</Value>
+          <Value name="assess.test">False</Value>
+          <Value name="train.fraction">50.0</Value>
+          <Value name="assess.oob">False</Value>
+          <Value name="bag.fraction">50.0</Value>
+          <Value name="shrinkage">0.0020</Value>
+          <Value name="interaction.depth">3</Value>
+          <Value name="n.minobsinnode">10</Value>
+          <Value name="rand.seed">1</Value>
+          <Value name="inches">True</Value>
+          <Value name="in.w">5.50</Value>
+          <Value name="in.h">5.50</Value>
+          <Value name="centimeters">False</Value>
+          <Value name="cm.w">13.00</Value>
+          <Value name="cm.h">14.95</Value>
+          <Value name="graph.resolution">1x</Value>
+          <Value name="pointsize">10</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Boosted_Model.yxmc" />
+    </Node>
+    <Node ToolID="10">
+      <GuiSettings>
+        <Position x="294" y="270" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="model.name">SLP</Value>
+          <Value name="select.target">Fraud_Label</Value>
+          <Value name="select.predictors">Avg_Allowance_Ratio=True,Avg_Excess_amount_claimed=True,Avg_Final_amount_received=True,Avg_Number of Medicare Beneficiaries=False,Avg_Number of Medicare Beneficiary/Day Services=True,Avg_Payout_Ratio=True,Count_HCPCS=True,Fraud_Label=False,Gender=True,Max_Allowance_Ratio=True,Max_Payout_Ratio=True,Min_Allowance_Ratio=True,Min_Payout_Ratio=True,National Provider Identifier=False,Provider Type=False,Sum_Total_amount_allowed=True,Sum_Total_amount_claimed=True,Sum_Total_amount_paid=True</Value>
+          <Value name="use.weights">False</Value>
+          <Value name="select.weights">Avg_Allowance_Ratio</Value>
+          <Value name="num.nodes">12</Value>
+          <Value name="marginal.plots">True</Value>
+          <Value name="custom.scaling">False</Value>
+          <Value name="scale.type">z-score</Value>
+          <Value name="decay">0.100</Value>
+          <Value name="range">0.700</Value>
+          <Value name="max.wts">1000</Value>
+          <Value name="max.iter">100</Value>
+          <Value name="inches">True</Value>
+          <Value name="in.w">5.50</Value>
+          <Value name="in.h">5.50</Value>
+          <Value name="centimeters">False</Value>
+          <Value name="cm.w">13.00</Value>
+          <Value name="cm.h">14.95</Value>
+          <Value name="graph.resolution">1x</Value>
+          <Value name="pointsize">10</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Neural_Network.yxmc" />
+    </Node>
+    <Node ToolID="11">
+      <GuiSettings>
+        <Position x="294" y="342" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="model.name">Polynom_SVM</Value>
+          <Value name="select.target">Fraud_Label</Value>
+          <Value name="select.predictors">Avg_Allowance_Ratio=True,Avg_Excess_amount_claimed=True,Avg_Final_amount_received=True,Avg_Number of Medicare Beneficiaries=False,Avg_Number of Medicare Beneficiary/Day Services=True,Avg_Payout_Ratio=True,Count_HCPCS=True,Fraud_Label=False,Gender=True,Max_Allowance_Ratio=True,Max_Payout_Ratio=True,Min_Allowance_Ratio=True,Min_Payout_Ratio=True,National Provider Identifier=False,Provider Type=True,Sum_Total_amount_allowed=True,Sum_Total_amount_claimed=True,Sum_Total_amount_paid=True</Value>
+          <Value name="type.classification">True</Value>
+          <Value name="class.c">True</Value>
+          <Value name="class.nu">False</Value>
+          <Value name="nu_nu">0.05</Value>
+          <Value name="type.regression">False</Value>
+          <Value name="reg.eps">True</Value>
+          <Value name="reg.nu">False</Value>
+          <Value name="reg.nu_nu">0.05</Value>
+          <Value name="model.cust">True</Value>
+          <Value name="user.define">False</Value>
+          <Value name="kernel.linear">False</Value>
+          <Value name="linear.cost">1.00</Value>
+          <Value name="kernel.polynomial">False</Value>
+          <Value name="poly.cost">1.00</Value>
+          <Value name="poly.degree">2.000</Value>
+          <Value name="poly.gamma">1.00000</Value>
+          <Value name="poly.coef0">1.00</Value>
+          <Value name="kernel.radial">True</Value>
+          <Value name="rad.cost">1.00</Value>
+          <Value name="rad.gamma">1.00000</Value>
+          <Value name="kernel.sigmoid">False</Value>
+          <Value name="sigmoid.cost">1.00</Value>
+          <Value name="sigmoid.gamma">1.00000</Value>
+          <Value name="sigmoid.coef0">1.00</Value>
+          <Value name="grid.search">True</Value>
+          <Value name="gs.number">5</Value>
+          <Value name="gs.linear">False</Value>
+          <Value name="gs.linear.cost_min">1.00</Value>
+          <Value name="gs.linear.cost_max">1.00</Value>
+          <Value name="gs.polynomial">True</Value>
+          <Value name="gs.poly.cost_min">0.01</Value>
+          <Value name="gs.poly.cost_max">1.00</Value>
+          <Value name="gs.poly.degree_min">0.001</Value>
+          <Value name="gs.poly.degree_max">2.000</Value>
+          <Value name="gs.poly.gamma_min">0.00050</Value>
+          <Value name="gs.poly.gamma_max">1.00000</Value>
+          <Value name="gs.poly.coef0_min">0.01</Value>
+          <Value name="gs.poly.coef0_max">1.00</Value>
+          <Value name="gs.radial">False</Value>
+          <Value name="gs.radial.cost_min">1.00</Value>
+          <Value name="gs.radial.cost_max">1.00</Value>
+          <Value name="gs.radial.gamma_min">1.00000</Value>
+          <Value name="gs.radial.gamma_max">1.00000</Value>
+          <Value name="gs.sigmoid">False</Value>
+          <Value name="gs.sigmoid.cost_min">1.00</Value>
+          <Value name="gs.sigmoid.cost_max">1.00</Value>
+          <Value name="gs.sigmoid.gamma_min">1.00000</Value>
+          <Value name="gs.sigmoid.gamma_max">1.00000</Value>
+          <Value name="gs.sigmoid.coef0_min">1.00</Value>
+          <Value name="gs.sigmoid.coef0_max">1.00</Value>
+          <Value name="seed">1</Value>
+          <Value name="inches">True</Value>
+          <Value name="in.w">5.50</Value>
+          <Value name="in.h">5.50</Value>
+          <Value name="centimeters">False</Value>
+          <Value name="cm.w">13.00</Value>
+          <Value name="cm.h">14.95</Value>
+          <Value name="graph.resolution">1x</Value>
+          <Value name="pointsize">10</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\SVM_v2.yxmc" />
+    </Node>
+    <Node ToolID="12">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.Union.Union">
+        <Position x="529" y="270" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <ByName_ErrorMode>Warning</ByName_ErrorMode>
+          <ByName_OutputMode>All</ByName_OutputMode>
+          <Mode>ByName</Mode>
+          <SetOutputOrder value="False" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxUnion" />
+    </Node>
+    <Node ToolID="13">
+      <GuiSettings>
+        <Position x="390" y="114" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="New Model">Stepwise_GLM</Value>
+          <Value name="both">True</Value>
+          <Value name="backward">False</Value>
+          <Value name="AIC">True</Value>
+          <Value name="BIC">False</Value>
+          <Value name="graph.resolution">1x</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Stepwise.yxmc" />
+    </Node>
+    <Node ToolID="14">
+      <GuiSettings>
+        <Position x="654" y="270" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="target.level">Yes</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <MetaInfo connection="predictions">
+          <RecordInfo>
+            <Field name="Actual" size="1073741823" source="R-DATA:" type="V_WString" />
+            <Field name="GLM" size="1073741823" source="R-DATA:" type="V_WString" />
+            <Field name="xGB" size="1073741823" source="R-DATA:" type="V_WString" />
+            <Field name="SLP" size="1073741823" source="R-DATA:" type="V_WString" />
+            <Field name="Polynom_SVM" size="1073741823" source="R-DATA:" type="V_WString" />
+            <Field name="Stepwise_GLM" size="1073741823" source="R-DATA:" type="V_WString" />
+            <Field name="Radial_SVM" size="1073741823" source="R-DATA:" type="V_WString" />
+            <Field name="Linear_SVM" size="1073741823" source="R-DATA:" type="V_WString" />
+          </RecordInfo>
+        </MetaInfo>
+        <MetaInfo connection="error_measures">
+          <RecordInfo>
+            <Field name="Model" size="1073741823" source="R-DATA:" type="V_WString" />
+            <Field name="Accuracy" source="R-DATA:" type="Double" />
+            <Field name="Accuracy_No" source="R-DATA:" type="Double" />
+            <Field name="Accuracy_Yes" source="R-DATA:" type="Double" />
+            <Field name="F1" source="R-DATA:" type="Double" />
+            <Field name="AUC" source="R-DATA:" type="Double" />
+          </RecordInfo>
+        </MetaInfo>
+        <MetaInfo connection="Report">
+          <RecordInfo>
+            <Field name="Group" size="64" source="Formula: (Multiple Sources)" type="V_String" />
+            <Field name="Layout" size="2147483647" source="Report:Layout:" type="V_String" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\Model Comparison.yxmc" />
+    </Node>
+    <Node ToolID="15">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="774" y="270" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_19092_c40bfdf6099d4150ae529da5a4720b87_\Engine_18036_9a1f9f7bd8ed44abbf219f7ab2ec6db2_.yxdb</TempFile>
+          <TempFileDataProfiling />
+          <Layout>
+            <ViewMode>Single</ViewMode>
+            <ViewSize value="100" />
+            <View1>
+              <DefaultTab>Report</DefaultTab>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+            <View2 />
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="16">
+      <GuiSettings>
+        <Position x="294" y="414" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="model.name">Radial_SVM</Value>
+          <Value name="select.target">Fraud_Label</Value>
+          <Value name="select.predictors">Avg_Allowance_Ratio=True,Avg_Excess_amount_claimed=True,Avg_Final_amount_received=True,Avg_Number of Medicare Beneficiaries=False,Avg_Number of Medicare Beneficiary/Day Services=True,Avg_Payout_Ratio=True,Count_HCPCS=True,Fraud_Label=False,Gender=True,Max_Allowance_Ratio=True,Max_Payout_Ratio=True,Min_Allowance_Ratio=True,Min_Payout_Ratio=True,National Provider Identifier=False,Provider Type=True,Sum_Total_amount_allowed=True,Sum_Total_amount_claimed=True,Sum_Total_amount_paid=True</Value>
+          <Value name="type.classification">True</Value>
+          <Value name="class.c">True</Value>
+          <Value name="class.nu">False</Value>
+          <Value name="nu_nu">0.05</Value>
+          <Value name="type.regression">False</Value>
+          <Value name="reg.eps">True</Value>
+          <Value name="reg.nu">False</Value>
+          <Value name="reg.nu_nu">0.05</Value>
+          <Value name="model.cust">True</Value>
+          <Value name="user.define">False</Value>
+          <Value name="kernel.linear">False</Value>
+          <Value name="linear.cost">1.00</Value>
+          <Value name="kernel.polynomial">False</Value>
+          <Value name="poly.cost">1.00</Value>
+          <Value name="poly.degree">2.000</Value>
+          <Value name="poly.gamma">1.00000</Value>
+          <Value name="poly.coef0">1.00</Value>
+          <Value name="kernel.radial">True</Value>
+          <Value name="rad.cost">1.00</Value>
+          <Value name="rad.gamma">1.00000</Value>
+          <Value name="kernel.sigmoid">False</Value>
+          <Value name="sigmoid.cost">1.00</Value>
+          <Value name="sigmoid.gamma">1.00000</Value>
+          <Value name="sigmoid.coef0">1.00</Value>
+          <Value name="grid.search">True</Value>
+          <Value name="gs.number">5</Value>
+          <Value name="gs.linear">False</Value>
+          <Value name="gs.linear.cost_min">1.00</Value>
+          <Value name="gs.linear.cost_max">1.00</Value>
+          <Value name="gs.polynomial">False</Value>
+          <Value name="gs.poly.cost_min">1.00</Value>
+          <Value name="gs.poly.cost_max">1.00</Value>
+          <Value name="gs.poly.degree_min">2.000</Value>
+          <Value name="gs.poly.degree_max">2.000</Value>
+          <Value name="gs.poly.gamma_min">1.00000</Value>
+          <Value name="gs.poly.gamma_max">1.00000</Value>
+          <Value name="gs.poly.coef0_min">1.00</Value>
+          <Value name="gs.poly.coef0_max">1.00</Value>
+          <Value name="gs.radial">True</Value>
+          <Value name="gs.radial.cost_min">0.01</Value>
+          <Value name="gs.radial.cost_max">1.00</Value>
+          <Value name="gs.radial.gamma_min">0.00050</Value>
+          <Value name="gs.radial.gamma_max">1.00000</Value>
+          <Value name="gs.sigmoid">False</Value>
+          <Value name="gs.sigmoid.cost_min">1.00</Value>
+          <Value name="gs.sigmoid.cost_max">1.00</Value>
+          <Value name="gs.sigmoid.gamma_min">1.00000</Value>
+          <Value name="gs.sigmoid.gamma_max">1.00000</Value>
+          <Value name="gs.sigmoid.coef0_min">1.00</Value>
+          <Value name="gs.sigmoid.coef0_max">1.00</Value>
+          <Value name="seed">1</Value>
+          <Value name="inches">True</Value>
+          <Value name="in.w">5.50</Value>
+          <Value name="in.h">5.50</Value>
+          <Value name="centimeters">False</Value>
+          <Value name="cm.w">13.00</Value>
+          <Value name="cm.h">14.95</Value>
+          <Value name="graph.resolution">1x</Value>
+          <Value name="pointsize">10</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\SVM_v2.yxmc" />
+    </Node>
+    <Node ToolID="17">
+      <GuiSettings>
+        <Position x="294" y="486" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="model.name">Linear_SVM</Value>
+          <Value name="select.target">Fraud_Label</Value>
+          <Value name="select.predictors">Avg_Allowance_Ratio=True,Avg_Excess_amount_claimed=True,Avg_Final_amount_received=True,Avg_Number of Medicare Beneficiaries=False,Avg_Number of Medicare Beneficiary/Day Services=True,Avg_Payout_Ratio=True,Count_HCPCS=True,Fraud_Label=False,Gender=True,Max_Allowance_Ratio=True,Max_Payout_Ratio=True,Min_Allowance_Ratio=True,Min_Payout_Ratio=True,National Provider Identifier=False,Provider Type=True,Sum_Total_amount_allowed=True,Sum_Total_amount_claimed=True,Sum_Total_amount_paid=True</Value>
+          <Value name="type.classification">True</Value>
+          <Value name="class.c">True</Value>
+          <Value name="class.nu">False</Value>
+          <Value name="nu_nu">0.05</Value>
+          <Value name="type.regression">False</Value>
+          <Value name="reg.eps">True</Value>
+          <Value name="reg.nu">False</Value>
+          <Value name="reg.nu_nu">0.05</Value>
+          <Value name="model.cust">True</Value>
+          <Value name="user.define">False</Value>
+          <Value name="kernel.linear">False</Value>
+          <Value name="linear.cost">1.00</Value>
+          <Value name="kernel.polynomial">False</Value>
+          <Value name="poly.cost">1.00</Value>
+          <Value name="poly.degree">2.000</Value>
+          <Value name="poly.gamma">1.00000</Value>
+          <Value name="poly.coef0">1.00</Value>
+          <Value name="kernel.radial">True</Value>
+          <Value name="rad.cost">1.00</Value>
+          <Value name="rad.gamma">1.00000</Value>
+          <Value name="kernel.sigmoid">False</Value>
+          <Value name="sigmoid.cost">1.00</Value>
+          <Value name="sigmoid.gamma">1.00000</Value>
+          <Value name="sigmoid.coef0">1.00</Value>
+          <Value name="grid.search">True</Value>
+          <Value name="gs.number">5</Value>
+          <Value name="gs.linear">True</Value>
+          <Value name="gs.linear.cost_min">0.01</Value>
+          <Value name="gs.linear.cost_max">1.00</Value>
+          <Value name="gs.polynomial">False</Value>
+          <Value name="gs.poly.cost_min">1.00</Value>
+          <Value name="gs.poly.cost_max">1.00</Value>
+          <Value name="gs.poly.degree_min">2.000</Value>
+          <Value name="gs.poly.degree_max">2.000</Value>
+          <Value name="gs.poly.gamma_min">1.00000</Value>
+          <Value name="gs.poly.gamma_max">1.00000</Value>
+          <Value name="gs.poly.coef0_min">1.00</Value>
+          <Value name="gs.poly.coef0_max">1.00</Value>
+          <Value name="gs.radial">False</Value>
+          <Value name="gs.radial.cost_min">1.00</Value>
+          <Value name="gs.radial.cost_max">1.00</Value>
+          <Value name="gs.radial.gamma_min">1.00000</Value>
+          <Value name="gs.radial.gamma_max">1.00000</Value>
+          <Value name="gs.sigmoid">False</Value>
+          <Value name="gs.sigmoid.cost_min">1.00</Value>
+          <Value name="gs.sigmoid.cost_max">1.00</Value>
+          <Value name="gs.sigmoid.gamma_min">1.00000</Value>
+          <Value name="gs.sigmoid.gamma_max">1.00000</Value>
+          <Value name="gs.sigmoid.coef0_min">1.00</Value>
+          <Value name="gs.sigmoid.coef0_max">1.00</Value>
+          <Value name="seed">1</Value>
+          <Value name="inches">True</Value>
+          <Value name="in.w">5.50</Value>
+          <Value name="in.h">5.50</Value>
+          <Value name="centimeters">False</Value>
+          <Value name="cm.w">13.00</Value>
+          <Value name="cm.h">14.95</Value>
+          <Value name="graph.resolution">1x</Value>
+          <Value name="pointsize">10</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+      </Properties>
+      <EngineSettings Macro="Predictive Tools\SVM_v2.yxmc" />
+    </Node>
+    <Node ToolID="18">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="438" y="498" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Layout>
+            <View1>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="19">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="390" y="54" />
+      </GuiSettings>
+      <Properties>
+        <Configuration />
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="20">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="390" y="6" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Layout>
+            <View1>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+  </Nodes>
+  <Connections>
+    <Connection>
+      <Origin ToolID="1" Connection="Output" />
+      <Destination ToolID="6" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="1" Connection="Output" />
+      <Destination ToolID="2" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="8" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="9" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="10" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="11" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="13" Connection="Left Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="8" Connection="Output" />
+      <Destination ToolID="13" Connection="Right Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="16" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="17" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="4" Connection="Output" />
+      <Destination ToolID="5" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="4" Connection="Output" />
+      <Destination ToolID="7" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="7" Connection="Output" />
+      <Destination ToolID="14" Connection="Data" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="12" Connection="Output" />
+      <Destination ToolID="14" Connection="Models" />
+    </Connection>
+    <Connection name="#1">
+      <Origin ToolID="8" Connection="Output" />
+      <Destination ToolID="12" Connection="Input" />
+    </Connection>
+    <Connection name="#2">
+      <Origin ToolID="9" Connection="Output" />
+      <Destination ToolID="12" Connection="Input" />
+    </Connection>
+    <Connection name="#3">
+      <Origin ToolID="10" Connection="Output" />
+      <Destination ToolID="12" Connection="Input" />
+    </Connection>
+    <Connection name="#4">
+      <Origin ToolID="11" Connection="Object" />
+      <Destination ToolID="12" Connection="Input" />
+    </Connection>
+    <Connection name="#5">
+      <Origin ToolID="13" Connection="Output" />
+      <Destination ToolID="12" Connection="Input" />
+    </Connection>
+    <Connection name="#6">
+      <Origin ToolID="16" Connection="Object" />
+      <Destination ToolID="12" Connection="Input" />
+    </Connection>
+    <Connection name="#7">
+      <Origin ToolID="17" Connection="Object" />
+      <Destination ToolID="12" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="8" Connection="Reports" />
+      <Destination ToolID="19" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="8" Connection="Interactive Report" />
+      <Destination ToolID="20" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="14" Connection="Report" />
+      <Destination ToolID="15" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="17" Connection="Report" />
+      <Destination ToolID="18" Connection="Input" />
+    </Connection>
+  </Connections>
+  <Properties>
+    <Memory default="True" />
+    <GlobalRecordLimit value="0" />
+    <TempFiles default="True" />
+    <Annotation on="True" includeToolName="False" />
+    <ConvErrorLimit value="10" />
+    <ConvErrorLimit_Stop value="False" />
+    <CancelOnError value="False" />
+    <DisableBrowse value="False" />
+    <EnablePerformanceProfiling value="False" />
+    <PredictiveToolsCodePage value="1252" />
+    <DisableAllOutput value="False" />
+    <ShowAllMacroMessages value="False" />
+    <ShowConnectionStatusIsOn value="True" />
+    <ShowConnectionStatusOnlyWhenRunning value="True" />
+    <ZoomLevel value="0" />
+    <LayoutType>Horizontal</LayoutType>
+    <MetaInfo>
+      <NameIsFileName value="True" />
+      <Name>models_withtest</Name>
+      <Description />
+      <RootToolName />
+      <ToolVersion />
+      <ToolInDb value="False" />
+      <CategoryName />
+      <SearchTags />
+      <Author />
+      <Company />
+      <Copyright />
+      <DescriptionLink actual="" displayed="" />
+      <Example>
+        <Description />
+        <File />
+      </Example>
+      <WorkflowId value="537360df-c1d6-4e7d-84d4-5c0b4ac0c301" />
+      <Telemetry>
+        <PreviousWorkflowId value="e8d03d9d-ce42-4b7a-b7ba-47ab90e78ae2" />
+        <OriginWorkflowId value="e8d03d9d-ce42-4b7a-b7ba-47ab90e78ae2" />
+      </Telemetry>
+    </MetaInfo>
+    <Events>
+      <Enabled value="True" />
+    </Events>
+  </Properties>
+</AlteryxDocument>

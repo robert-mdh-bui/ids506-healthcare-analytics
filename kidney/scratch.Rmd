@@ -1,0 +1,926 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Env
+
+```{r}
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(tidymodels)
+library(themis)
+
+setwd("G:/My Drive/academics/2122_uic_ms/2022_spring/ids506_health/kidney")
+```
+
+# Import
+
+```{r}
+dat <- read_csv("data.csv") %>% 
+  filter(is.na(CKD) == FALSE)
+
+NAs <- colMeans(is.na(dat)) %>% data.frame()
+colnames(NAs) <- c("prop_NA")
+NAs %>% 
+  arrange(desc(prop_NA))
+
+df <- dat %>% 
+  filter_all(all_vars(is.na(.)==F))
+
+df <- df %>% 
+  select(
+    # Output Var
+    CKD,
+    
+    # Demo
+    Age,
+    Female,
+    Racegrp,
+    Educ,
+    Unmarried,
+    Income,
+    
+    # Healthcare Access
+    CareSource,
+    Insured,
+    
+    # Metrics (eliminating weight + height as BMI reduces both)
+    # (eliminating TotalChol = HDL+LDL as granular values are being kept)
+    BMI,
+    Obese,
+    Waist,
+    SBP,
+    DBP,
+    HDL,
+    LDL,
+    Dyslipidemia,
+    PVD,
+    
+    # Lifestyle & Family History
+    Activity,
+    PoorVision,
+    Smoker,
+    Hypertension,
+    Hypertension_fam = `Fam Hypertension`,
+    Diabetes,
+    Diabetes_fam = `Fam Diabetes`,
+    Stroke,
+    CVD,
+    CVD_fam = `Fam CVD`,
+    CHF,
+    Anemia
+  ) %>% 
+  mutate(
+    CKD = factor(CKD),
+    Activity = factor(Activity),
+    
+  )
+```
+
+```{r}
+write_csv(df,"data_clean.csv")
+```
+
+```{r}
+dflong <- df %>% 
+  transmute(across(everything(), as.character)) %>% 
+  pivot_longer(
+    cols = -c(CKD),
+    names_to = "colname",
+    values_to = "val"
+  )
+
+write_csv(dflong,"data_long.csv")
+```
+
+
+
+# EDA
+
+## Non-factor (Numerics)
+
+### Age
+
+```{r}
+fig1a <- df %>% 
+  group_by(Age,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = Age,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col(position = "fill")+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Proportion",
+       fill = "CKD",
+       col = "CKD")+ 
+  theme(legend.position = "none")
+
+fig1b <- df %>% 
+  group_by(Age,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = Age,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col()+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Count",
+       fill = "CKD",
+       col = "CKD")
+
+(fig1a | fig1b) + 
+  plot_annotation(
+    title = "Figure 1: CKD dist. across Age by Count and Proportion"
+  )
+```
+
+### BMI
+
+```{r}
+fig2a <- df %>% 
+  mutate(BMI = round(BMI)) %>% 
+  group_by(BMI,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = BMI,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col(position = "fill")+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Proportion",
+       fill = "CKD",
+       col = "CKD")+ 
+  theme(legend.position = "none")
+
+fig2b <- df %>% 
+  mutate(BMI = round(BMI)) %>% 
+  group_by(BMI,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = BMI,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col()+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Count",
+       fill = "CKD",
+       col = "CKD")
+
+(fig2a | fig2b) + 
+  plot_annotation(
+    title = "Figure 2: CKD dist. across BMI (rounded) by Count and Proportion"
+  )
+```
+
+### Waist
+
+```{r}
+fig3a <- df %>% 
+  mutate(Waist = round(Waist)) %>% 
+  group_by(Waist,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = Waist,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col(position = "fill")+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Proportion",
+       fill = "CKD",
+       col = "CKD")+ 
+  theme(legend.position = "none")
+
+fig3b <- df %>% 
+  mutate(Waist = round(Waist)) %>% 
+  group_by(Waist,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = Waist,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col()+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Count",
+       fill = "CKD",
+       col = "CKD")
+
+(fig3a | fig3b) + 
+  plot_annotation(
+    title = "Figure 3: CKD dist. across Waist (rounded) by Count and Proportion"
+  )
+```
+
+### SBP
+
+```{r}
+fig4a <- df %>% 
+  mutate(SBP = round(SBP)) %>% 
+  group_by(SBP,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = SBP,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col(position = "fill")+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Proportion",
+       fill = "CKD",
+       col = "CKD")+ 
+  theme(legend.position = "none")
+
+fig4b <- df %>% 
+  mutate(SBP = round(SBP)) %>% 
+  group_by(SBP,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = SBP,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col()+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Count",
+       fill = "CKD",
+       col = "CKD")
+
+(fig4a | fig4b) + 
+  plot_annotation(
+    title = "Figure 4: CKD dist. across SBP (rounded) by Count and Proportion"
+  )
+```
+
+### DBP
+
+```{r}
+fig5a <- df %>% 
+  mutate(DBP = round(DBP)) %>% 
+  group_by(DBP,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = DBP,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col(position = "fill")+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Proportion",
+       fill = "CKD",
+       col = "CKD")+ 
+  theme(legend.position = "none")
+
+fig5b <- df %>% 
+  mutate(DBP = round(DBP)) %>% 
+  group_by(DBP,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = DBP,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col()+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Count",
+       fill = "CKD",
+       col = "CKD")
+
+(fig5a | fig5b) + 
+  plot_annotation(
+    title = "Figure 5: CKD dist. across DBP (rounded) by Count and Proportion"
+  )
+```
+
+### HDL
+
+```{r}
+fig6a <- df %>% 
+  mutate(HDL = round(HDL)) %>% 
+  group_by(HDL,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = HDL,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col(position = "fill")+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Proportion",
+       fill = "CKD",
+       col = "CKD")+ 
+  theme(legend.position = "none")
+
+fig6b <- df %>% 
+  mutate(HDL = round(HDL)) %>% 
+  group_by(HDL,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = HDL,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col()+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Count",
+       fill = "CKD",
+       col = "CKD")
+
+(fig6a | fig6b) + 
+  plot_annotation(
+    title = "Figure 6: CKD dist. across HDL (rounded) by Count and Proportion"
+  )
+```
+
+### LDL 
+
+```{r}
+fig7a <- df %>% 
+  mutate(LDL = round(LDL)) %>% 
+  group_by(LDL,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = LDL,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col(position = "fill")+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Proportion",
+       fill = "CKD",
+       col = "CKD")+ 
+  theme(legend.position = "none")
+
+fig7b <- df %>% 
+  mutate(LDL = round(LDL)) %>% 
+  group_by(LDL,CKD) %>% 
+  summarise(n=n()) %>% 
+  ggplot()+
+  aes(x = LDL,
+      y = n,
+      fill = CKD %>% factor(),
+      col = CKD %>% factor())+
+  geom_col()+
+  scale_fill_viridis_d() + scale_color_viridis_d()+
+  labs(y = "Count",
+       fill = "CKD",
+       col = "CKD")
+
+(fig7a | fig7b) + 
+  plot_annotation(
+    title = "Figure 7: CKD dist. across LDL (rounded) by Count and Proportion"
+  )
+```
+
+## Factors
+
+(Tableau crosstabs here)
+
+# Modeling 1: Exploring Methods
+
+## Splitting
+```{r}
+set.seed(8675309)
+
+splits <- initial_split(df,
+                        prop = .75,
+                        strata = CKD)
+
+d.train <- training(splits)
+d.test  <- testing(splits)
+```
+
+## Preprocessing Steps
+
+```{r}
+recipe.d <- recipe(CKD~., data = d.train) %>% 
+  step_relevel(
+    Racegrp,
+    ref_level = "white"
+  ) %>% 
+  step_relevel(
+    CareSource,
+    ref_level = "noplace"
+  ) %>% 
+  step_relevel(
+    Activity,
+    ref_level = "1"
+  ) %>% 
+  step_dummy(
+    Racegrp,
+    CareSource, 
+    Activity
+  ) %>% 
+  step_zv(all_numeric_predictors()) %>% 
+  step_normalize(all_numeric_predictors())
+```
+
+## Base GLM
+
+### Training
+```{r}
+model.logreg <- 
+  logistic_reg() %>% 
+  set_engine("glm") %>% 
+  set_mode("classification")
+
+wf.logreg <-
+  workflow() %>% 
+  add_model(model.logreg) %>% 
+  add_recipe(recipe.d)
+
+fit.logreg <- wf.logreg %>% fit(d.train)
+```
+
+### Coefficient-based VarImp
+
+```{r}
+tidy(fit.logreg) %>% 
+  mutate(odds_ratio = round(exp(estimate),2)) %>% 
+  mutate(sig        = case_when(p.value <= .001 ~ "***",
+                                p.value <= .01 & p.value > 0.001 ~ "**",
+                                p.value <= .05 & p.value > 0.01 ~ "*")) %>% 
+  select(term, odds_ratio, p.value, sig) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(p.value)
+```
+
+### Performance
+
+```{r}
+fit.logreg.test <- wf.logreg %>% last_fit(splits)
+
+preds <- fit.logreg.test %>% 
+  collect_predictions()
+```
+
+#### Red Herring: Unadjusted for imbalance
+
+```{r}
+
+metrics1f <- preds %>% pr_auc(truth = CKD,
+                 estimate = .pred_0,
+                 event_level = "first") %>%
+  rbind(preds %>%
+          f_meas(
+            truth = CKD,
+            estimate = .pred_class,
+            event_level = "first"
+          )) %>% 
+  select(-.estimator)
+
+
+# PR Curve
+a <- preds %>% 
+  pr_curve(CKD,.pred_0,
+           event_level = "first") %>% 
+  autoplot()
+
+# ROC Curve
+b <- preds %>% 
+  roc_curve(
+    truth = CKD,
+    estimate = .pred_0,
+    event_level = "first"
+  ) %>% 
+  autoplot()
+
+(a | b) + 
+  plot_annotation(
+    title = paste("AUC of PR Curve: ",metrics1f[1,2],"\n",
+                  "F1 Measure: ",metrics1f[2,2],sep = "")
+  )
+```
+
+#### Truth: Adjusted for imbalance
+
+```{r}
+# PR-AUC + bACC
+metrics1t <- preds %>% pr_auc(truth = CKD,
+                 estimate = .pred_1,
+                 event_level = "second") %>%
+  rbind(preds %>%
+          bal_accuracy(
+            truth = CKD,
+            estimate = .pred_class,
+            event_level = "second"
+          )) %>% 
+  rbind(preds %>%
+          sens(
+            truth = CKD,
+            estimate = .pred_class,
+            event_level = "second"
+          )) %>% 
+  select(-.estimator)
+
+a <- preds %>% 
+  pr_curve(CKD,.pred_1,
+           event_level = "second") %>% 
+  autoplot()
+
+b <- preds %>% 
+  roc_curve(
+    truth = CKD,
+    estimate = .pred_1,
+    event_level = "second"
+  ) %>% 
+  autoplot()
+
+results_naive <- (a | b) + 
+  plot_annotation(
+    title = paste("AUC of PR Curve: ",metrics1t[1,2],"\n",
+                  "Balanced Accuracy: ",metrics1t[2,2],"\n",
+                  "True Positive Rate: ",metrics1t[3,2],
+                  sep = "")
+  )
+```
+
+## Subsampling 1: Downsampling
+
+### Downsampling 
+
+```{r}
+recipe.downsample <- recipe.d %>% 
+  step_downsample(CKD)
+```
+
+### Training
+
+```{r}
+model.logreg <- 
+  logistic_reg() %>% 
+  set_engine("glm") %>% 
+  set_mode("classification")
+
+wf.logreg.downsample <-
+  workflow() %>% 
+  add_model(model.logreg) %>% 
+  add_recipe(recipe.downsample)
+
+fit.logreg.downsample <- wf.logreg.downsample %>% fit(d.train)
+```
+
+### Coefficient-based VarImp
+
+```{r}
+tidy(fit.logreg.downsample) %>% 
+  mutate(odds_ratio = round(exp(estimate),2)) %>% 
+  mutate(sig        = case_when(p.value <= .001 ~ "***",
+                                p.value <= .01 & p.value > 0.001 ~ "**",
+                                p.value <= .05 & p.value > 0.01 ~ "*")) %>% 
+  select(term, odds_ratio, p.value, sig) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(p.value)
+```
+### Performance
+
+```{r}
+fit.logreg.test.downsample <- wf.logreg.downsample %>% last_fit(splits)
+
+preds <- fit.logreg.test.downsample %>% 
+  collect_predictions()
+
+# PR-AUC + bACC
+metrics1t <- preds %>% pr_auc(truth = CKD,
+                 estimate = .pred_1,
+                 event_level = "second") %>%
+  rbind(preds %>%
+          bal_accuracy(
+            truth = CKD,
+            estimate = .pred_class,
+            event_level = "second"
+          )) %>% 
+  select(-.estimator)
+
+a <- preds %>% 
+  pr_curve(CKD,.pred_1,
+           event_level = "second") %>% 
+  autoplot()
+
+b <- preds %>% 
+  roc_curve(
+    truth = CKD,
+    estimate = .pred_1,
+    event_level = "second"
+  ) %>% 
+  autoplot()
+
+(a | b) + 
+  plot_annotation(
+    title = paste("AUC of PR Curve: ",metrics1t[1,2],"\n",
+                  "Balanced Accuracy: ",metrics1t[2,2],sep = "")
+  )
+
+```
+
+## Subsampling 2: Upsampling
+
+### Upsampling 
+
+```{r}
+recipe.upsample <- recipe.d %>% 
+  step_upsample(CKD)
+```
+
+### Training
+
+```{r}
+wf.logreg.upsample <-
+  workflow() %>% 
+  add_model(model.logreg) %>% 
+  add_recipe(recipe.upsample)
+
+fit.logreg.upsample <- wf.logreg.upsample %>% fit(d.train)
+```
+
+### Coefficient-based VarImp
+
+```{r}
+tidy(fit.logreg.upsample) %>% 
+  mutate(odds_ratio = round(exp(estimate),2)) %>% 
+  mutate(sig        = case_when(p.value <= .001 ~ "***",
+                                p.value <= .01 & p.value > 0.001 ~ "**",
+                                p.value <= .05 & p.value > 0.01 ~ "*")) %>% 
+  select(term, odds_ratio, p.value, sig) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(p.value)
+```
+### Performance
+
+```{r}
+fit.logreg.test.upsample <- wf.logreg.upsample %>% last_fit(splits)
+
+preds <- fit.logreg.test.upsample %>% 
+  collect_predictions()
+
+# PR-AUC + bACC
+metrics1t <- preds %>% pr_auc(truth = CKD,
+                 estimate = .pred_1,
+                 event_level = "second") %>%
+  rbind(preds %>%
+          bal_accuracy(
+            truth = CKD,
+            estimate = .pred_class,
+            event_level = "second"
+          )) %>% 
+  select(-.estimator)
+
+a <- preds %>% 
+  pr_curve(CKD,.pred_1,
+           event_level = "second") %>% 
+  autoplot()
+
+b <- preds %>% 
+  roc_curve(
+    truth = CKD,
+    estimate = .pred_1,
+    event_level = "second"
+  ) %>% 
+  autoplot()
+
+(a | b) + 
+  plot_annotation(
+    title = paste("AUC of PR Curve: ",metrics1t[1,2],"\n",
+                  "Balanced Accuracy: ",metrics1t[2,2],sep = "")
+  )
+
+```
+
+## Subsampling 3: SMOTE
+
+### SMOTE 
+
+```{r}
+recipe.smote <- recipe.d %>% 
+  step_smote(CKD)
+```
+
+### Training
+
+```{r}
+wf.logreg.smote <-
+  workflow() %>% 
+  add_model(model.logreg) %>% 
+  add_recipe(recipe.smote)
+
+fit.logreg.smote <- wf.logreg.smote %>% fit(d.train)
+```
+
+### Coefficient-based VarImp
+
+```{r}
+tidy(fit.logreg.smote) %>% 
+  mutate(odds_ratio = round(exp(estimate),2)) %>% 
+  mutate(sig        = case_when(p.value <= .001 ~ "***",
+                                p.value <= .01 & p.value > 0.001 ~ "**",
+                                p.value <= .05 & p.value > 0.01 ~ "*")) %>% 
+  select(term, odds_ratio, p.value, sig) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(p.value)
+```
+### Performance
+
+```{r}
+fit.logreg.test.smote <- wf.logreg.smote %>% last_fit(splits)
+
+preds <- fit.logreg.test.smote %>% 
+  collect_predictions()
+
+# PR-AUC + bACC
+metrics1t <- preds %>% pr_auc(truth = CKD,
+                 estimate = .pred_1,
+                 event_level = "second") %>%
+  rbind(preds %>%
+          bal_accuracy(
+            truth = CKD,
+            estimate = .pred_class,
+            event_level = "second"
+          )) %>% 
+  select(-.estimator)
+
+a <- preds %>% 
+  pr_curve(CKD,.pred_1,
+           event_level = "second") %>% 
+  autoplot()
+
+b <- preds %>% 
+  roc_curve(
+    truth = CKD,
+    estimate = .pred_1,
+    event_level = "second"
+  ) %>% 
+  autoplot()
+
+(a | b) + 
+  plot_annotation(
+    title = paste("AUC of PR Curve: ",metrics1t[1,2],"\n",
+                  "Balanced Accuracy: ",metrics1t[2,2],sep = "")
+  )
+
+```
+
+# Modeling 2: Putting it all together
+
+## Splitting
+
+```{r}
+set.seed(8675309)
+
+splits <- initial_split(df,
+                        prop = .75,
+                        strata = CKD)
+
+d.other <- training(splits)
+d.test  <- testing(splits)
+
+val_set <- validation_split(d.other,
+                            prop = .8,
+                            strata = CKD)
+```
+
+## Tuning 
+
+```{r}
+recipe <- recipe(CKD ~ ., data = d.other) %>%
+  step_relevel(Racegrp,
+               ref_level = "white") %>%
+  step_relevel(CareSource,
+               ref_level = "noplace") %>%
+  step_relevel(Activity,
+               ref_level = "1") %>%
+  step_dummy(Racegrp,
+             CareSource,
+             Activity) %>%
+  step_zv(all_numeric_predictors()) %>%
+  step_normalize(all_numeric_predictors()) %>% 
+  step_smote(CKD)
+  
+model <- 
+  logistic_reg(
+    penalty = tune(),
+    mixture = tune()
+  ) %>% 
+  set_engine("glmnet")
+
+wf <- workflow() %>% 
+  add_model(model) %>% 
+  add_recipe(recipe)
+
+grid <- expand.grid(
+  penalty = c(0,.001,.01,.025,.05,.1,.2,.25,.5,1),
+  mixture = c(0,0.25,0.5,0.75,1)
+)
+
+set.seed(8675309)
+tune <- wf %>% 
+  tune_grid(val_set,
+            grid = grid,
+            control = control_grid(save_pred = T),
+            metrics = metric_set(bal_accuracy))
+
+best <- tune %>% 
+  select_best(metric = "bal_accuracy")
+
+tune %>% 
+  collect_metrics() %>% 
+  ggplot(aes(x = penalty,
+             y = mean,
+             col = mixture %>% factor())) +
+  geom_point()+
+  geom_line()+
+  labs(
+    y = "bACC",
+    col = "Reg. Type"
+  )+
+  scale_color_viridis_d()+
+  theme_minimal()
+```
+## Fitting 
+
+```{r}
+model.final <- 
+  logistic_reg(penalty = best$penalty,
+               mixture = best$mixture) %>% 
+  set_engine("glmnet")
+
+wf.final <-
+  workflow() %>% 
+  add_model(model.final) %>% 
+  add_recipe(recipe)
+
+set.seed(8675309)
+fit.final <- wf.final %>% 
+  last_fit(splits)
+```
+
+```{r}
+fit <- wf.final %>% fit(d.other)
+
+tidy(fit) %>% 
+  select(-penalty) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(desc(abs(estimate)))
+```
+
+
+## Performance
+
+```{r}
+preds <- fit.final %>% 
+  collect_predictions()
+
+# PR-AUC + bACC
+metrics1t <- preds %>% pr_auc(truth = CKD,
+                 estimate = .pred_1,
+                 event_level = "second") %>%
+  rbind(preds %>%
+          bal_accuracy(
+            truth = CKD,
+            estimate = .pred_class,
+            event_level = "second"
+          )) %>% 
+  rbind(preds %>%
+          sens(
+            truth = CKD,
+            estimate = .pred_class,
+            event_level = "second"
+          )) %>% 
+  select(-.estimator)
+
+a <- preds %>% 
+  pr_curve(CKD,.pred_1,
+           event_level = "second") %>% 
+  autoplot()
+
+b <- preds %>% 
+  roc_curve(
+    truth = CKD,
+    estimate = .pred_1,
+    event_level = "second"
+  ) %>% 
+  autoplot()
+
+results_final <- (a | b) + 
+  plot_annotation(
+    title = paste("AUC of PR Curve: ",metrics1t[1,2],"\n",
+                  "Balanced Accuracy: ",metrics1t[2,2],"\n",
+                  "True Positive Rate: ",metrics1t[3,2],
+                  sep = "")
+  )
+```
+```{r}
+results_naive
+results_final
+```
+

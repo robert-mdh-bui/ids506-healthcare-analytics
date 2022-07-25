@@ -1,0 +1,96 @@
+---
+title: "get_new_predictions"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("G:/My Drive/academics/2122_uic_ms/2022_spring/ids506_health/prostate")
+
+library(tidyverse)
+library(tidymodels)
+library(textrecipes)
+library(discrim)
+library(patchwork)
+library(lubridate)
+library(tidytext)
+library(themis)
+library(vip)
+library(kableExtra)
+
+dat <- read_csv("data/training_data.csv") %>% 
+  rename(y = survival_7_years) %>% 
+  mutate(y = y %>% factor()) %>% 
+  # Removing NAs
+  drop_na(
+    # No default variables
+    weight,height,age,
+    # Essential variables
+    gleason_score,psa_diagnosis,tumor_diagnosis
+  ) %>% 
+  # Mutations
+  mutate(
+    # Imputing for PSA and tumor size
+    psa_1_year           = case_when(!is.na(psa_1_year)                       ~ psa_1_year,
+                                     is.na(psa_1_year) & !is.na(psa_6_months) ~ psa_6_months,
+                                     is.na(psa_1_year) & is.na(psa_6_months)  ~ psa_diagnosis,
+                                     is.na(psa_1_year) & is.na(psa_6_months) & is.na(psa_diagnosis) ~ 0),
+    tumor_1_year         = case_when(!is.na(tumor_1_year)                         ~ tumor_1_year,
+                                     is.na(tumor_1_year) & !is.na(tumor_6_months) ~ tumor_6_months,
+                                     is.na(tumor_1_year) & is.na(tumor_6_months)  ~ tumor_diagnosis,
+                                     is.na(tumor_1_year) & is.na(tumor_6_months) & is.na(tumor_diagnosis) ~ 0),
+    # Family History imputation
+    family_history       = ifelse(is.na(family_history)==1,       0,family_history),
+    family_history       = family_history %>% factor(),
+    first_degree_history = ifelse(is.na(first_degree_history)==1, 0,first_degree_history),
+    first_degree_history = first_degree_history %>% factor(),
+    # Personal History imputation
+    previous_cancer      = ifelse(is.na(previous_cancer)==1,      0,previous_cancer),
+    smoker               = ifelse(is.na(smoker)==1,               0,smoker)
+  )
+
+newdata <- read_csv("data/(name)_score.csv") %>% 
+  # Mutations
+  mutate(
+    # Imputing for PSA and tumor size
+    psa_1_year           = case_when(!is.na(psa_1_year)                       ~ psa_1_year,
+                                     is.na(psa_1_year) & !is.na(psa_6_months) ~ psa_6_months,
+                                     is.na(psa_1_year) & is.na(psa_6_months)  ~ psa_diagnosis,
+                                     is.na(psa_1_year) & is.na(psa_6_months) & is.na(psa_diagnosis) ~ 0),
+    tumor_1_year         = case_when(!is.na(tumor_1_year)                         ~ tumor_1_year,
+                                     is.na(tumor_1_year) & !is.na(tumor_6_months) ~ tumor_6_months,
+                                     is.na(tumor_1_year) & is.na(tumor_6_months)  ~ tumor_diagnosis,
+                                     is.na(tumor_1_year) & is.na(tumor_6_months) & is.na(tumor_diagnosis) ~ 0),
+    # Family History imputation
+    family_history       = ifelse(is.na(family_history)==1,       0,family_history),
+    family_history       = family_history %>% factor(),
+    first_degree_history = ifelse(is.na(first_degree_history)==1, 0,first_degree_history),
+    first_degree_history = first_degree_history %>% factor(),
+    # Personal History imputation
+    previous_cancer      = ifelse(is.na(previous_cancer)==1,      0,previous_cancer),
+    smoker               = ifelse(is.na(smoker)==1,               0,smoker)
+  )
+```
+
+```{r}
+# Stacking a check for survival_1_year on top of any fitted model
+manual_stack <- function(dframe,modelfit){
+  df_man <- dframe[dframe$survival_1_year == min(dframe$survival_1_year),] %>% 
+    mutate(.pred_class = 0)
+  df_alg <- dframe[dframe$survival_1_year != min(dframe$survival_1_year),]
+  df_alg <- df_alg %>% cbind(predict(modelfit, new_data = df_alg))
+  
+  result <- rbind(df_man,df_alg)
+  return(result)
+}
+
+fit_xgboost <- read_rds("models/fit_xgboost.rds")
+```
+
+```{r}
+manual_stack(newdata,fit_xgboost)
+```
+

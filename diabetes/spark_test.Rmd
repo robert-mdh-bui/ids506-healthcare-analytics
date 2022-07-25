@@ -1,0 +1,46 @@
+---
+title: "spark"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(sparklyr)
+
+#setwd("C:/Users/rober/AppData/Local/spark")
+getwd()
+```
+
+```{r}
+conf <- list()
+
+conf$`sparklyr.cores.local` <- 6
+conf$`sparklyr.shell.driver-memory` <- "24G"
+conf$spark.memory.fraction <- 0.9
+
+sc <- spark_connect(master = "local",
+                    config = conf)
+```
+
+```{r}
+flights_tbl <- copy_to(sc, nycflights13::flights, "flights")
+iris_tbl <- copy_to(sc, iris, "iris")
+```
+
+```{r}
+model_glm <- iris_tbl %>% 
+  filter(Species != "setosa") %>% 
+  transmute(
+    y = Species,
+    sepal_len = Sepal_Length,
+    sepal_wid = Sepal_Width,
+    petal_len = Petal_Length,
+    petal_wid = Petal_Width,
+    sepal_ttl = sepal_len + sepal_wid,
+    petal_ttl = petal_len + petal_wid
+  ) %>% 
+  ml_logistic_regression(y ~ .)
+
+model_glm %>% summary()
+```
+

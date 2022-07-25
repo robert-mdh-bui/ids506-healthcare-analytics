@@ -1,0 +1,210 @@
+---
+title: 'Imputation on Time Series Missing Data'
+author: "Robert Duc Bui - mbui7@uic.edu - 660809303"
+subtitle: 'IDS.506: Fargo Health Group Assignment Technical Appendix Rmd Notebook'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(lubridate)
+library(zoo)
+library(Cairo)
+library(tsibble)
+library(fable)
+library(feasts)
+library(imputeTS)
+```
+
+```{r eval=FALSE, include=TRUE}
+library(tidyverse)
+library(tidymodels)
+library(lubridate)
+library(zoo)
+library(Cairo)
+library(tsibble)
+library(fable)
+library(feasts)
+library(imputeTS)
+```
+
+```{r}
+raw_ts <- read_csv("data/raw_ts.csv",
+                   show_col_types = FALSE) %>% 
+  transmute(
+    y = `Incoming Examinations`,
+    datetime = paste(Year,Month,"01",sep="-") %>% ymd()
+  )
+```
+
+```{r}
+# tsibble ecosystem format
+tsib <- raw_ts %>% as_tsibble(index = datetime)
+
+# traditional ts format
+ts <- raw_ts %>% select(y) %>% 
+  ts(start = c(2006,1),
+     end   = c(2013,12),
+     frequency = 12)
+
+# printing time series as matrix
+print(ts)
+```
+
+```{r}
+# Summary Statistics of missing values
+statsNA(ts)
+
+# plotting missing periods
+ggplot_na_distribution(ts)
+```
+
+# Sanity Check: Is there seasonality?
+
+```{r}
+# STL decomposition with basic quick imputed LOCF
+ts %>% 
+  na_locf() %>% 
+  decompose() %>% 
+  autoplot(s.window = 'periodic')
+```
+
+# Basic Methods
+
+```{r}
+# Last-Observation-Carried-Forward imputation
+ts_locf <-
+  ts %>% na_locf(option = "locf",
+                 # For exceptions with no observation from same direction: 
+                 # reverse direction of method
+                 na_remaining = "rev",
+                 maxgap = Inf)
+
+ggplot_na_imputations(x_with_na = ts,
+                      x_with_imputations = ts_locf,
+                      title = "Imputed Values w/ LOCF",
+                      theme = ggplot2::theme_minimal())
+
+# Next-Observation-Carried-Backward imputation
+ts_nocb <-
+  ts %>% na_locf(option = "nocb",
+                 # For exceptions with no observation from same direction: 
+                 # reverse direction of method
+                 na_remaining = "rev",
+                 maxgap = Inf)
+
+ggplot_na_imputations(x_with_na = ts,
+                      x_with_imputations = ts_nocb,
+                      title = "Imputed Values w/ NOCB",
+                      theme = ggplot2::theme_minimal())
+
+# Linear Interpolation
+ts_linear <-
+  ts %>% na_interpolation(option = "linear",
+                          maxgap = Inf)
+
+ggplot_na_imputations(x_with_na = ts,
+                      x_with_imputations = ts_linear,
+                      title = "Imputed Values w/ Linear Interp.",
+                      theme = ggplot2::theme_minimal())
+
+```
+
+# Intermediate Methods
+
+```{r}
+# Stineman Interpolation
+ts_stineman <-
+  ts %>% na_interpolation(option = "stine",
+                          maxgap = Inf)
+
+ggplot_na_imputations(x_with_na = ts,
+                      x_with_imputations = ts_stineman,
+                      title = "Imputed Values w/ Stineman Interp.",
+                      theme = ggplot2::theme_minimal())
+
+# Kalman filtering imputation
+ts_kalman <- 
+  ts %>% na_kalman(model = "StructTS",
+                   smooth = T,
+                   maxgap = Inf)
+
+ggplot_na_imputations(x_with_na = ts,
+                      x_with_imputations = ts_kalman,
+                      title = "Imputed Values w/ Kalman filtering",
+                      theme = ggplot2::theme_minimal())
+```
+
+# Deseasonalised Methods
+
+```{r}
+# Deseasonalised LOCF
+ts_dsea_locf <- ts %>% 
+  na_seadec(algorithm = "locf",
+            maxgap = Inf)
+
+ggplot_na_imputations(x_with_na = ts,
+                      x_with_imputations = ts_dsea_locf,
+                      title = "Imputed Values w/ Deseasonalised LOCF",
+                      theme = ggplot2::theme_minimal())
+
+# Deseasonalised linear interp
+ts_dsea_linear <-ts %>% 
+  na_seadec(algorithm = "interpolation",
+            maxgap = Inf)
+
+ggplot_na_imputations(x_with_na = ts,
+                      x_with_imputations = ts_dsea_linear,
+                      title = "Imputed Values w/ Deseasonalised Linear Interp.",
+                      theme = ggplot2::theme_minimal())
+
+# Deseasonalised Kalman filtering
+ts_dsea_kalman <- ts %>% 
+  na_seadec(algorithm = "kalman",
+            maxgap = Inf)
+
+ggplot_na_imputations(x_with_na = ts,
+                      x_with_imputations = ts_dsea_kalman,
+                      title = "Imputed Values w/ Deseasonalised Kalman filtering",
+                      theme = ggplot2::theme_minimal())
+
+```
+
+# Exporting imputed time series objects
+
+```{r}
+# Helper function to parse ts obj
+to_df <- function(input_ts){
+  output_df <- input_ts %>% 
+    as_tsibble() %>% 
+    as_tibble() %>% 
+    transmute(
+      `Incoming Examinations` = round(value),
+      Year = substr(index %>% as.character(), 1,4),
+      Month = substr(index %>% as.character(), 6,8) %>% match(month.abb)
+    )
+  return(output_df)
+}
+
+# Writing to csv (modified from Dr. Ron J Hyndman's "Saving ts objects as csv files")
+# Citation (Chicago 17th):
+# “Saving Ts Objects as Csv Files | Rob J Hyndman.” 
+# Accessed April 12, 2022. https://robjhyndman.com/hyndsight/ts2csv/.
+ts_to_csv <- function(x) {
+  fname <- paste0("data/",deparse(substitute(x)), ".csv")
+  readr::write_csv(to_df(x), fname)
+}
+
+ts_to_csv(ts_locf)
+ts_to_csv(ts_nocb)
+ts_to_csv(ts_linear)
+ts_to_csv(ts_stineman)
+ts_to_csv(ts_kalman)
+ts_to_csv(ts_dsea_locf)
+ts_to_csv(ts_dsea_linear)
+ts_to_csv(ts_dsea_kalman)
+```
+

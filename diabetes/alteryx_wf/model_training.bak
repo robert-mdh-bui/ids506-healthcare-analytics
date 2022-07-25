@@ -1,0 +1,1045 @@
+<?xml version="1.0"?>
+<AlteryxDocument yxmdVer="2021.4">
+  <Nodes>
+    <Node ToolID="70">
+      <GuiSettings Plugin="AlteryxGuiToolkit.ToolContainer.ToolContainer">
+        <Position x="497" y="53" width="216" height="281" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Caption>Serializing Model Object</Caption>
+          <Style TextColor="#314c4a" FillColor="#ecf2f2" BorderColor="#314c4a" Transparency="25" Margin="25" />
+          <Disabled value="False" />
+          <Folded value="False" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <ChildNodes>
+        <Node ToolID="45">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileOutput.DbFileOutput">
+            <Position x="522" y="102" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <File FileFormat="19" MaxRecords="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\models\GLM.yxdb</File>
+              <Passwords />
+              <FormatSpecificOptions>
+                <NoSpatialIndex>False</NoSpatialIndex>
+                <SaveSource>True</SaveSource>
+                <WriteCompatibleVersion>False</WriteCompatibleVersion>
+              </FormatSpecificOptions>
+              <MultiFile value="False" />
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText>GLM.yxdb</DefaultAnnotationText>
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileOutput" />
+        </Node>
+        <Node ToolID="41">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileOutput.DbFileOutput">
+            <Position x="522" y="162" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <File FileFormat="19" MaxRecords="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\models\GBM.yxdb</File>
+              <Passwords />
+              <FormatSpecificOptions>
+                <NoSpatialIndex>False</NoSpatialIndex>
+                <SaveSource>True</SaveSource>
+                <WriteCompatibleVersion>False</WriteCompatibleVersion>
+              </FormatSpecificOptions>
+              <MultiFile value="False" />
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText>GBM.yxdb</DefaultAnnotationText>
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileOutput" />
+        </Node>
+        <Node ToolID="53">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileOutput.DbFileOutput">
+            <Position x="522" y="234" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <File FileFormat="19" MaxRecords="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\models\RF.yxdb</File>
+              <Passwords />
+              <FormatSpecificOptions>
+                <NoSpatialIndex>False</NoSpatialIndex>
+                <SaveSource>True</SaveSource>
+                <WriteCompatibleVersion>False</WriteCompatibleVersion>
+              </FormatSpecificOptions>
+              <MultiFile value="False" />
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText>RF.yxdb</DefaultAnnotationText>
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileOutput" />
+        </Node>
+      </ChildNodes>
+    </Node>
+    <Node ToolID="69">
+      <GuiSettings Plugin="AlteryxGuiToolkit.ToolContainer.ToolContainer">
+        <Position x="281" y="53" width="205" height="377" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Caption>Training Models</Caption>
+          <Style TextColor="#314c4a" FillColor="#ecf2f2" BorderColor="#314c4a" Transparency="25" Margin="25" />
+          <Disabled value="False" />
+          <Folded value="False" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <ChildNodes>
+        <Node ToolID="18">
+          <GuiSettings>
+            <Position x="306" y="246" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <Value name="model.name">GBM</Value>
+              <Value name="select.target">readmitted</Value>
+              <Value name="select.predictors">readmitted=False,gender=True,race_AfricanAmerican=True,race_Asian=True,race_Hispanic=True,race_Other=True,age_70+=True,age_&lt;50=True,admission_type_id_Emergency=True,admission_type_id_Other=True,admission_type_id_Urgent=True,admission_source_id_ER or Trauma=True,admission_source_id_Other=True,admission_source_id_Transfer=True,discharge_disposition_id_Other=True,discharge_disposition_id_Unknown=True,discharge_disposition_id_Another Facility=True,discharge_disposition_id_Nursing Home or Hospice=True,d1_Diabetes=True,d1_Digestive=True,d1_Genitourinary=True,d1_Injury=True,d1_Musculoskeletal=True,d1_Neoplasms=True,d1_Other=True,d1_Respiratory=True,max_glu_serum_&gt;200=True,max_glu_serum_&gt;300=True,max_glu_serum_None=True,A1Cresult_Diabetes=True,A1Cresult_None=True,A1Cresult_Pre-Diabetes=True,time_in_hospital=True,num_lab_procedures=True,num_procedures=True,num_medications=True,number_diagnoses=True,change=True,diabetesMed=True,service_util=True,drug_change=True,metformin=False,glimepiride=False,glipizide=False,glyburide=False,pioglitazone=False,rosiglitazone=False,insulin=False</Value>
+              <Value name="use.weights">False</Value>
+              <Value name="select.weights">gender</Value>
+              <Value name="marginal.plots">False</Value>
+              <Value name="plot.min.importance">2.5</Value>
+              <Value name="type.distribution">True</Value>
+              <Value name="type.continuous">False</Value>
+              <Value name="dist.gaussian">True</Value>
+              <Value name="dist.laplace">False</Value>
+              <Value name="dist.t">False</Value>
+              <Value name="t.df">4</Value>
+              <Value name="type.count">False</Value>
+              <Value name="type.binomial">True</Value>
+              <Value name="dist.bernoulli">True</Value>
+              <Value name="dist.adaboost">False</Value>
+              <Value name="type.multinomial">False</Value>
+              <Value name="n.trees">10000</Value>
+              <Value name="assess.cv">True</Value>
+              <Value name="num.folds">5</Value>
+              <Value name="n.cores">4</Value>
+              <Value name="assess.test">False</Value>
+              <Value name="train.fraction">50.0</Value>
+              <Value name="assess.oob">False</Value>
+              <Value name="bag.fraction">50.0</Value>
+              <Value name="shrinkage">0.0020</Value>
+              <Value name="interaction.depth">1</Value>
+              <Value name="n.minobsinnode">10</Value>
+              <Value name="rand.seed">1</Value>
+              <Value name="inches">True</Value>
+              <Value name="in.w">5.50</Value>
+              <Value name="in.h">5.50</Value>
+              <Value name="centimeters">False</Value>
+              <Value name="cm.w">13.00</Value>
+              <Value name="cm.h">14.95</Value>
+              <Value name="graph.resolution">1x</Value>
+              <Value name="pointsize">10</Value>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <AnnotationText>GBM</AnnotationText>
+              <DefaultAnnotationText>GBM</DefaultAnnotationText>
+              <Left value="False" />
+            </Annotation>
+            <Dependencies>
+              <Implicit />
+            </Dependencies>
+          </Properties>
+          <EngineSettings Macro="Predictive Tools\Boosted_Model.yxmc" />
+        </Node>
+        <Node ToolID="23">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+            <Position x="402" y="258" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_14236_1885d5fb02992b4a976721399cd34f3f_\Engine_14236_10ac425b8129ad4fa317567d04a8804d~.yxdb</TempFile>
+              <TempFileDataProfiling />
+              <Layout>
+                <ViewMode>Single</ViewMode>
+                <ViewSize value="100" />
+                <View1>
+                  <DefaultTab>Report</DefaultTab>
+                  <Hints>
+                    <Table />
+                  </Hints>
+                </View1>
+                <View2 />
+              </Layout>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+        </Node>
+        <Node ToolID="42">
+          <GuiSettings Plugin="Logistic_Regression">
+            <Position x="306" y="174" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <Value name="curPage">Home</Value>
+              <Value name="curTab">advanced</Value>
+              <Value name="lambda_1se">False</Value>
+              <Value name="lambda_min">True</Value>
+              <Value name="Model Name">GLM</Value>
+              <Value name="Y Var">readmitted</Value>
+              <Value name="X Vars">gender,race_AfricanAmerican,race_Asian,race_Hispanic,race_Other,age_70+,age_&lt;50,admission_type_id_Emergency,admission_type_id_Other,admission_type_id_Urgent,admission_source_id_ER or Trauma,admission_source_id_Other,admission_source_id_Transfer,discharge_disposition_id_Other,discharge_disposition_id_Unknown,discharge_disposition_id_Another Facility,discharge_disposition_id_Nursing Home or Hospice,d1_Diabetes,d1_Digestive,d1_Genitourinary,d1_Injury,d1_Musculoskeletal,d1_Neoplasms,d1_Other,d1_Respiratory,max_glu_serum_&gt;200,max_glu_serum_&gt;300,max_glu_serum_None,A1Cresult_Diabetes,A1Cresult_None,A1Cresult_Pre-Diabetes,time_in_hospital,num_lab_procedures,num_procedures,num_medications,number_diagnoses,change,diabetesMed,service_util,drug_change</Value>
+              <Value name="Use Weights">False</Value>
+              <Value name="Weight Vec" />
+              <Value name="regularization">False</Value>
+              <Value name="alpha">0.5</Value>
+              <Value name="standardize_pred">False</Value>
+              <Value name="internal_cv">True</Value>
+              <Value name="nfolds">5</Value>
+              <Value name="lambda">lambda_min</Value>
+              <Value name="set_seed_internal_cv">True</Value>
+              <Value name="seed_internal_cv">1</Value>
+              <Value name="lambda_no_cv">0.5</Value>
+              <Value name="posClass">
+              </Value>
+              <Value name="Link">logit</Value>
+              <Value name="external_cv">False</Value>
+              <Value name="nfolds_external">5</Value>
+              <Value name="numberTrials">3</Value>
+              <Value name="stratified">False</Value>
+              <Value name="set_seed_external_cv">False</Value>
+              <Value name="external_seed_value">1</Value>
+              <Value name="graph.resolution">1x</Value>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText>GLM</DefaultAnnotationText>
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings Macro="Logistic_Regression/Supporting_Macros/Logistic_Regression.yxmc" EngineDll="Macro" EngineDllEntryPoint="Logistic_Regression/Supporting_Macros/Logistic_Regression.yxmc" />
+        </Node>
+        <Node ToolID="43">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+            <Position x="402" y="102" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_14236_1885d5fb02992b4a976721399cd34f3f_\Engine_14236_7e91533338103b47aa37d92009a23dac~.yxdb</TempFile>
+              <TempFileDataProfiling />
+              <Layout>
+                <ViewMode>Single</ViewMode>
+                <ViewSize value="100" />
+                <View1>
+                  <DefaultTab>Report</DefaultTab>
+                  <Hints>
+                    <Table />
+                  </Hints>
+                </View1>
+                <View2 />
+              </Layout>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+        </Node>
+        <Node ToolID="44">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+            <Position x="402" y="150" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_14236_1885d5fb02992b4a976721399cd34f3f_\Engine_14236_0d7bfaeaf9cadc4283e3d7efc62b2cb7~.yxdb</TempFile>
+              <TempFileDataProfiling />
+              <Layout>
+                <ViewMode>Single</ViewMode>
+                <ViewSize value="100" />
+                <View1>
+                  <DefaultTab>Report</DefaultTab>
+                  <Hints>
+                    <Table />
+                  </Hints>
+                </View1>
+                <View2 />
+              </Layout>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+        </Node>
+        <Node ToolID="51">
+          <GuiSettings>
+            <Position x="306" y="330" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <Value name="Model Name">RF</Value>
+              <Value name="Y Var">readmitted</Value>
+              <Value name="X Vars">gender + race_AfricanAmerican + race_Asian + race_Hispanic + race_Other + age_70+ + age_&lt;50 + admission_type_id_Emergency + admission_type_id_Other + admission_type_id_Urgent + admission_source_id_ER or Trauma + admission_source_id_Other + admission_source_id_Transfer + discharge_disposition_id_Other + discharge_disposition_id_Unknown + discharge_disposition_id_Another Facility + discharge_disposition_id_Nursing Home or Hospice + d1_Diabetes + d1_Digestive + d1_Genitourinary + d1_Injury + d1_Musculoskeletal + d1_Neoplasms + d1_Other + d1_Respiratory + max_glu_serum_&gt;200 + max_glu_serum_&gt;300 + max_glu_serum_None + A1Cresult_Diabetes + A1Cresult_None + A1Cresult_Pre-Diabetes + time_in_hospital + num_lab_procedures + num_procedures + num_medications + number_diagnoses + change + diabetesMed + service_util + drug_change</Value>
+              <Value name="Num Trees">1000</Value>
+              <Value name="Custom Num Vars">False</Value>
+              <Value name="Num Vars">3</Value>
+              <Value name="model.size">False</Value>
+              <Value name="total.nodes">100</Value>
+              <Value name="max.depth">10</Value>
+              <Value name="node.size">5</Value>
+              <Value name="replace">True</Value>
+              <Value name="samp.rate">50</Value>
+              <Value name="inches">True</Value>
+              <Value name="in.w">5.50</Value>
+              <Value name="in.h">5.50</Value>
+              <Value name="centimeters">False</Value>
+              <Value name="cm.w">13.00</Value>
+              <Value name="cm.h">14.95</Value>
+              <Value name="graph.resolution">1x</Value>
+              <Value name="pointsize">10</Value>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <AnnotationText>RF</AnnotationText>
+              <DefaultAnnotationText>RF</DefaultAnnotationText>
+              <Left value="False" />
+            </Annotation>
+            <Dependencies>
+              <Implicit />
+            </Dependencies>
+          </Properties>
+          <EngineSettings Macro="Predictive Tools\Forest_Model.yxmc" />
+        </Node>
+        <Node ToolID="52">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+            <Position x="402" y="342" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_14236_1885d5fb02992b4a976721399cd34f3f_\Engine_14236_e6c5886835630c4dbedbf94831c1cea1~.yxdb</TempFile>
+              <TempFileDataProfiling />
+              <Layout>
+                <ViewMode>Single</ViewMode>
+                <ViewSize value="100" />
+                <View1>
+                  <DefaultTab>Report</DefaultTab>
+                  <Hints>
+                    <Table />
+                  </Hints>
+                </View1>
+                <View2 />
+              </Layout>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+        </Node>
+      </ChildNodes>
+    </Node>
+    <Node ToolID="63">
+      <GuiSettings Plugin="AlteryxGuiToolkit.ToolContainer.ToolContainer">
+        <Position x="65" y="53" width="205" height="221" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Caption>df_train ingest</Caption>
+          <Style TextColor="#314c4a" FillColor="#ecf2f2" BorderColor="#314c4a" Transparency="25" Margin="25" />
+          <Disabled value="False" />
+          <Folded value="False" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <ChildNodes>
+        <Node ToolID="40">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+            <Position x="186" y="102" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_14236_1885d5fb02992b4a976721399cd34f3f_\Engine_14236_e7fd1e6b9e89504ea4d995019a205e0d~.yxdb</TempFile>
+              <TempFileDataProfiling />
+              <Layout>
+                <ViewMode>Single</ViewMode>
+                <ViewSize value="100" />
+                <View1>
+                  <DefaultTab>Profile</DefaultTab>
+                  <Hints>
+                    <Table />
+                  </Hints>
+                </View1>
+                <View2 />
+              </Layout>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+        </Node>
+        <Node ToolID="54">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect">
+            <Position x="186" y="174" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <OrderChanged value="False" />
+              <CommaDecimal value="False" />
+              <SelectFields>
+                <SelectField field="readmitted" selected="True" type="V_String" forced="True" size="256" />
+                <SelectField field="gender" selected="True" type="Int16" size="2" />
+                <SelectField field="race_AfricanAmerican" selected="True" type="Int16" size="2" />
+                <SelectField field="race_Asian" selected="True" type="Int16" size="2" />
+                <SelectField field="race_Hispanic" selected="True" type="Int16" size="2" />
+                <SelectField field="race_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="age_70+" selected="True" type="Int16" size="2" />
+                <SelectField field="age_&lt;50" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_type_id_Emergency" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_type_id_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_type_id_Urgent" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_source_id_ER or Trauma" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_source_id_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_source_id_Transfer" selected="True" type="Int16" size="2" />
+                <SelectField field="discharge_disposition_id_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="discharge_disposition_id_Unknown" selected="True" type="Int16" size="2" />
+                <SelectField field="discharge_disposition_id_Another Facility" selected="True" type="Int16" size="2" />
+                <SelectField field="discharge_disposition_id_Nursing Home or Hospice" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Diabetes" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Digestive" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Genitourinary" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Injury" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Musculoskeletal" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Neoplasms" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Respiratory" selected="True" type="Int16" size="2" />
+                <SelectField field="max_glu_serum_&gt;200" selected="True" type="Int16" size="2" />
+                <SelectField field="max_glu_serum_&gt;300" selected="True" type="Int16" size="2" />
+                <SelectField field="max_glu_serum_None" selected="True" type="Int16" size="2" />
+                <SelectField field="A1Cresult_Diabetes" selected="True" type="Int16" size="2" />
+                <SelectField field="A1Cresult_None" selected="True" type="Int16" size="2" />
+                <SelectField field="A1Cresult_Pre-Diabetes" selected="True" type="Int16" size="2" />
+                <SelectField field="time_in_hospital" selected="True" type="Int16" size="2" />
+                <SelectField field="num_lab_procedures" selected="True" type="Int16" size="2" />
+                <SelectField field="num_procedures" selected="True" type="Int16" size="2" />
+                <SelectField field="num_medications" selected="True" type="Int16" size="2" />
+                <SelectField field="number_diagnoses" selected="True" type="Int16" size="2" />
+                <SelectField field="change" selected="True" type="Int16" size="2" />
+                <SelectField field="diabetesMed" selected="True" type="Int16" size="2" />
+                <SelectField field="service_util" selected="True" type="Int16" size="2" />
+                <SelectField field="drug_change" selected="True" type="Int16" size="2" />
+                <SelectField field="metformin" selected="True" type="Int16" size="2" />
+                <SelectField field="glimepiride" selected="True" type="Int16" size="2" />
+                <SelectField field="glipizide" selected="True" type="Int16" size="2" />
+                <SelectField field="glyburide" selected="True" type="Int16" size="2" />
+                <SelectField field="pioglitazone" selected="True" type="Int16" size="2" />
+                <SelectField field="rosiglitazone" selected="True" type="Int16" size="2" />
+                <SelectField field="insulin" selected="True" type="Int16" size="2" />
+                <SelectField field="*Unknown" selected="False" />
+              </SelectFields>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxSelect" />
+        </Node>
+        <Node ToolID="55">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+            <Position x="90" y="174" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <Passwords />
+              <File RecordLimit="" SearchSubDirs="False" FileFormat="0" OutputFileName="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv</File>
+              <FormatSpecificOptions>
+                <HeaderRow>True</HeaderRow>
+                <IgnoreErrors>False</IgnoreErrors>
+                <AllowShareWrite>False</AllowShareWrite>
+                <ImportLine>1</ImportLine>
+                <FieldLen>254</FieldLen>
+                <SingleThreadRead>False</SingleThreadRead>
+                <IgnoreQuotes>DoubleQuotes</IgnoreQuotes>
+                <Delimeter>,</Delimeter>
+                <QuoteRecordBreak>False</QuoteRecordBreak>
+                <CodePage>28591</CodePage>
+              </FormatSpecificOptions>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText>df_train.csv</DefaultAnnotationText>
+              <Left value="False" />
+            </Annotation>
+            <MetaInfo connection="Output">
+              <RecordInfo>
+                <Field name="readmitted" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="gender" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="race_AfricanAmerican" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="race_Asian" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="race_Hispanic" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="race_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="age_70+" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="age_&lt;50" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="admission_type_id_Emergency" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="admission_type_id_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="admission_type_id_Urgent" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="admission_source_id_ER or Trauma" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="admission_source_id_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="admission_source_id_Transfer" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="discharge_disposition_id_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="discharge_disposition_id_Unknown" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="discharge_disposition_id_Another Facility" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="discharge_disposition_id_Nursing Home or Hospice" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="d1_Diabetes" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="d1_Digestive" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="d1_Genitourinary" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="d1_Injury" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="d1_Musculoskeletal" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="d1_Neoplasms" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="d1_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="d1_Respiratory" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="max_glu_serum_&gt;200" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="max_glu_serum_&gt;300" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="max_glu_serum_None" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="A1Cresult_Diabetes" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="A1Cresult_None" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="A1Cresult_Pre-Diabetes" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="time_in_hospital" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="num_lab_procedures" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="num_procedures" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="num_medications" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="number_diagnoses" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="change" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="diabetesMed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="service_util" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="drug_change" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="metformin" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="glimepiride" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="glipizide" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="glyburide" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="pioglitazone" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="rosiglitazone" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+                <Field name="insulin" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_train.csv" type="V_String" />
+              </RecordInfo>
+            </MetaInfo>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+        </Node>
+      </ChildNodes>
+    </Node>
+    <Node ToolID="65">
+      <GuiSettings Plugin="AlteryxGuiToolkit.ToolContainer.ToolContainer">
+        <Position x="65" y="281" width="205" height="217" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Caption>df_test ingest</Caption>
+          <Style TextColor="#314c4a" FillColor="#ecf2f2" BorderColor="#314c4a" Transparency="25" Margin="25" />
+          <Disabled value="False" />
+          <Folded value="False" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <ChildNodes>
+        <Node ToolID="57">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+            <Position x="90" y="330" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <Passwords />
+              <File RecordLimit="" SearchSubDirs="False" FileFormat="0" OutputFileName="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv</File>
+              <FormatSpecificOptions>
+                <HeaderRow>True</HeaderRow>
+                <IgnoreErrors>False</IgnoreErrors>
+                <AllowShareWrite>False</AllowShareWrite>
+                <ImportLine>1</ImportLine>
+                <FieldLen>254</FieldLen>
+                <SingleThreadRead>False</SingleThreadRead>
+                <IgnoreQuotes>DoubleQuotes</IgnoreQuotes>
+                <Delimeter>,</Delimeter>
+                <QuoteRecordBreak>False</QuoteRecordBreak>
+                <CodePage>28591</CodePage>
+              </FormatSpecificOptions>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText>df_test.csv</DefaultAnnotationText>
+              <Left value="False" />
+            </Annotation>
+            <MetaInfo connection="Output">
+              <RecordInfo>
+                <Field name="readmitted" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="gender" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="race_AfricanAmerican" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="race_Asian" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="race_Hispanic" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="race_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="age_70+" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="age_&lt;50" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="admission_type_id_Emergency" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="admission_type_id_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="admission_type_id_Urgent" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="admission_source_id_ER or Trauma" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="admission_source_id_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="admission_source_id_Transfer" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="discharge_disposition_id_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="discharge_disposition_id_Unknown" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="discharge_disposition_id_Another Facility" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="discharge_disposition_id_Nursing Home or Hospice" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="d1_Diabetes" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="d1_Digestive" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="d1_Genitourinary" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="d1_Injury" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="d1_Musculoskeletal" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="d1_Neoplasms" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="d1_Other" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="d1_Respiratory" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="max_glu_serum_&gt;200" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="max_glu_serum_&gt;300" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="max_glu_serum_None" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="A1Cresult_Diabetes" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="A1Cresult_None" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="A1Cresult_Pre-Diabetes" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="time_in_hospital" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="num_lab_procedures" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="num_procedures" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="num_medications" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="number_diagnoses" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="change" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="diabetesMed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="service_util" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="drug_change" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="metformin" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="glimepiride" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="glipizide" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="glyburide" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="pioglitazone" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="rosiglitazone" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+                <Field name="insulin" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\diabetes\data\df_test.csv" type="V_String" />
+              </RecordInfo>
+            </MetaInfo>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+        </Node>
+        <Node ToolID="58">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect">
+            <Position x="186" y="330" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <OrderChanged value="False" />
+              <CommaDecimal value="False" />
+              <SelectFields>
+                <SelectField field="readmitted" selected="True" type="V_String" forced="True" size="256" />
+                <SelectField field="gender" selected="True" type="Int16" size="2" />
+                <SelectField field="race_AfricanAmerican" selected="True" type="Int16" size="2" />
+                <SelectField field="race_Asian" selected="True" type="Int16" size="2" />
+                <SelectField field="race_Hispanic" selected="True" type="Int16" size="2" />
+                <SelectField field="race_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="age_70+" selected="True" type="Int16" size="2" />
+                <SelectField field="age_&lt;50" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_type_id_Emergency" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_type_id_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_type_id_Urgent" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_source_id_ER or Trauma" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_source_id_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="admission_source_id_Transfer" selected="True" type="Int16" size="2" />
+                <SelectField field="discharge_disposition_id_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="discharge_disposition_id_Unknown" selected="True" type="Int16" size="2" />
+                <SelectField field="discharge_disposition_id_Another Facility" selected="True" type="Int16" size="2" />
+                <SelectField field="discharge_disposition_id_Nursing Home or Hospice" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Diabetes" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Digestive" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Genitourinary" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Injury" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Musculoskeletal" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Neoplasms" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Other" selected="True" type="Int16" size="2" />
+                <SelectField field="d1_Respiratory" selected="True" type="Int16" size="2" />
+                <SelectField field="max_glu_serum_&gt;200" selected="True" type="Int16" size="2" />
+                <SelectField field="max_glu_serum_&gt;300" selected="True" type="Int16" size="2" />
+                <SelectField field="max_glu_serum_None" selected="True" type="Int16" size="2" />
+                <SelectField field="A1Cresult_Diabetes" selected="True" type="Int16" size="2" />
+                <SelectField field="A1Cresult_None" selected="True" type="Int16" size="2" />
+                <SelectField field="A1Cresult_Pre-Diabetes" selected="True" type="Int16" size="2" />
+                <SelectField field="time_in_hospital" selected="True" type="Int16" size="2" />
+                <SelectField field="num_lab_procedures" selected="True" type="Int16" size="2" />
+                <SelectField field="num_procedures" selected="True" type="Int16" size="2" />
+                <SelectField field="num_medications" selected="True" type="Int16" size="2" />
+                <SelectField field="number_diagnoses" selected="True" type="Int16" size="2" />
+                <SelectField field="change" selected="True" type="Int16" size="2" />
+                <SelectField field="diabetesMed" selected="True" type="Int16" size="2" />
+                <SelectField field="service_util" selected="True" type="Int16" size="2" />
+                <SelectField field="drug_change" selected="True" type="Int16" size="2" />
+                <SelectField field="metformin" selected="True" type="Int16" size="2" />
+                <SelectField field="glimepiride" selected="True" type="Int16" size="2" />
+                <SelectField field="glipizide" selected="True" type="Int16" size="2" />
+                <SelectField field="glyburide" selected="True" type="Int16" size="2" />
+                <SelectField field="pioglitazone" selected="True" type="Int16" size="2" />
+                <SelectField field="rosiglitazone" selected="True" type="Int16" size="2" />
+                <SelectField field="insulin" selected="True" type="Int16" size="2" />
+                <SelectField field="*Unknown" selected="False" />
+              </SelectFields>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxSelect" />
+        </Node>
+        <Node ToolID="68">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+            <Position x="186" y="414" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_14236_1885d5fb02992b4a976721399cd34f3f_\Engine_14236_8720ec364f95eb4b94395a65daab08e4~.yxdb</TempFile>
+              <TempFileDataProfiling />
+              <Layout>
+                <ViewMode>Single</ViewMode>
+                <ViewSize value="100" />
+                <View1>
+                  <DefaultTab>Profile</DefaultTab>
+                  <Hints>
+                    <Table />
+                  </Hints>
+                </View1>
+                <View2 />
+              </Layout>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+        </Node>
+      </ChildNodes>
+    </Node>
+    <Node ToolID="66">
+      <GuiSettings Plugin="AlteryxGuiToolkit.ToolContainer.ToolContainer">
+        <Position x="497" y="341" width="301" height="301" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Caption>validation</Caption>
+          <Style TextColor="#314c4a" FillColor="#ecf2f2" BorderColor="#314c4a" Transparency="25" Margin="25" />
+          <Disabled value="False" />
+          <Folded value="False" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <ChildNodes>
+        <Node ToolID="56">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.Union.Union">
+            <Position x="522" y="486" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <ByName_ErrorMode>Warning</ByName_ErrorMode>
+              <ByName_OutputMode>All</ByName_OutputMode>
+              <Mode>ByName</Mode>
+              <SetOutputOrder value="False" />
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxUnion" />
+        </Node>
+        <Node ToolID="59">
+          <GuiSettings>
+            <Position x="618" y="474" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <Value name="target.level">1</Value>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+            <Dependencies>
+              <Implicit />
+            </Dependencies>
+            <MetaInfo connection="predictions">
+              <RecordInfo>
+                <Field name="Actual" size="1073741823" source="R-DATA:" type="V_WString" />
+                <Field name="svm" size="1073741823" source="R-DATA:" type="V_WString" />
+                <Field name="random_forest" size="1073741823" source="R-DATA:" type="V_WString" />
+                <Field name="gbm" size="1073741823" source="R-DATA:" type="V_WString" />
+              </RecordInfo>
+            </MetaInfo>
+            <MetaInfo connection="error_measures">
+              <RecordInfo>
+                <Field name="Model" size="1073741823" source="R-DATA:" type="V_WString" />
+                <Field name="Accuracy" source="R-DATA:" type="Double" />
+                <Field name="Accuracy_No" source="R-DATA:" type="Double" />
+                <Field name="Accuracy_Yes" source="R-DATA:" type="Double" />
+                <Field name="F1" source="R-DATA:" type="Double" />
+                <Field name="AUC" source="R-DATA:" type="Double" />
+              </RecordInfo>
+            </MetaInfo>
+            <MetaInfo connection="Report">
+              <RecordInfo>
+                <Field name="Group" size="64" source="Formula: (Multiple Sources)" type="V_String" />
+                <Field name="Layout" size="2147483647" source="Report:Layout:" type="V_String" />
+              </RecordInfo>
+            </MetaInfo>
+          </Properties>
+          <EngineSettings Macro="Predictive Tools\Model Comparison.yxmc" />
+        </Node>
+        <Node ToolID="60">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+            <Position x="714" y="390" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_14236_1885d5fb02992b4a976721399cd34f3f_\Engine_14236_f698a69943455746a7902a270e23b517~.yxdb</TempFile>
+              <Layout>
+                <View1>
+                  <Hints>
+                    <Table />
+                  </Hints>
+                </View1>
+              </Layout>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+        </Node>
+        <Node ToolID="61">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+            <Position x="714" y="474" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_14236_1885d5fb02992b4a976721399cd34f3f_\Engine_14236_d3195a6913f96a499c8fbdd8ce783ef1~.yxdb</TempFile>
+              <Layout>
+                <View1>
+                  <Hints>
+                    <Table />
+                  </Hints>
+                </View1>
+              </Layout>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+        </Node>
+        <Node ToolID="62">
+          <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+            <Position x="714" y="558" />
+          </GuiSettings>
+          <Properties>
+            <Configuration>
+              <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_14236_1885d5fb02992b4a976721399cd34f3f_\Engine_14236_dce83078ab3adb4aacac308bae600ef4~.yxdb</TempFile>
+              <Layout>
+                <View1>
+                  <Hints>
+                    <Table />
+                  </Hints>
+                </View1>
+              </Layout>
+            </Configuration>
+            <Annotation DisplayMode="0">
+              <Name />
+              <DefaultAnnotationText />
+              <Left value="False" />
+            </Annotation>
+          </Properties>
+          <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+        </Node>
+      </ChildNodes>
+    </Node>
+  </Nodes>
+  <Connections>
+    <Connection>
+      <Origin ToolID="18" Connection="Report" />
+      <Destination ToolID="23" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="18" Connection="Output" />
+      <Destination ToolID="41" Connection="Input" />
+    </Connection>
+    <Connection name="#2">
+      <Origin ToolID="18" Connection="Output" />
+      <Destination ToolID="56" Connection="Input" />
+    </Connection>
+    <Connection name="#1">
+      <Origin ToolID="42" Connection="Output" />
+      <Destination ToolID="56" Connection="Input" />
+    </Connection>
+    <Connection name="#3">
+      <Origin ToolID="51" Connection="Output" />
+      <Destination ToolID="56" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="42" Connection="Reports" />
+      <Destination ToolID="43" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="42" Connection="Interactive Report" />
+      <Destination ToolID="44" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="42" Connection="Output" />
+      <Destination ToolID="45" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="51" Connection="Reports" />
+      <Destination ToolID="52" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="51" Connection="Output" />
+      <Destination ToolID="53" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="54" Connection="Output" />
+      <Destination ToolID="40" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="54" Connection="Output" />
+      <Destination ToolID="42" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="54" Connection="Output" />
+      <Destination ToolID="18" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="54" Connection="Output" />
+      <Destination ToolID="51" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="55" Connection="Output" />
+      <Destination ToolID="54" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="57" Connection="Output" />
+      <Destination ToolID="58" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="58" Connection="Output" />
+      <Destination ToolID="59" Connection="Data" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="56" Connection="Output" />
+      <Destination ToolID="59" Connection="Models" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="58" Connection="Output" />
+      <Destination ToolID="68" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="59" Connection="error_measures" />
+      <Destination ToolID="60" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="59" Connection="predictions" />
+      <Destination ToolID="61" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="59" Connection="Report" />
+      <Destination ToolID="62" Connection="Input" />
+    </Connection>
+  </Connections>
+  <Properties>
+    <Memory default="False" max="24576" />
+    <GlobalRecordLimit value="0" />
+    <TempFiles default="True" />
+    <Annotation on="True" includeToolName="False" />
+    <ConvErrorLimit value="0" />
+    <ConvErrorLimit_Stop value="False" />
+    <CancelOnError value="False" />
+    <DisableBrowse value="False" />
+    <EnablePerformanceProfiling value="False" />
+    <RunWithE2 value="True" />
+    <PredictiveToolsCodePage value="1252" />
+    <DisableAllOutput value="False" />
+    <ShowAllMacroMessages value="True" />
+    <ShowConnectionStatusIsOn value="True" />
+    <ShowConnectionStatusOnlyWhenRunning value="True" />
+    <ZoomLevel value="0" />
+    <LayoutType>Horizontal</LayoutType>
+    <MetaInfo>
+      <NameIsFileName value="True" />
+      <Name>model_training</Name>
+      <Description />
+      <RootToolName />
+      <ToolVersion />
+      <ToolInDb value="False" />
+      <CategoryName />
+      <SearchTags />
+      <Author />
+      <Company />
+      <Copyright />
+      <DescriptionLink actual="" displayed="" />
+      <Example>
+        <Description />
+        <File />
+      </Example>
+      <WorkflowId value="63a06881-4821-45d7-a133-4df899e0a3c7" />
+      <Telemetry>
+        <PreviousWorkflowId value="dc2e5896-46eb-40a2-98b1-a9d74eaf168c" />
+        <OriginWorkflowId value="dc2e5896-46eb-40a2-98b1-a9d74eaf168c" />
+      </Telemetry>
+    </MetaInfo>
+    <Events>
+      <Enabled value="True" />
+    </Events>
+  </Properties>
+</AlteryxDocument>

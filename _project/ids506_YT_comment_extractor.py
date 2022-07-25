@@ -1,0 +1,181 @@
+# Imports
+import pandas as pd
+import html
+import re
+import string
+import numpy as np
+from textblob import TextBlob
+
+# nltk-related junk
+import nltk
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('vader_lexicon')
+nltk.download('wordnet')
+lem = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+sia = SentimentIntensityAnalyzer()
+
+### remove non ASCII characters
+def strip_non_ascii(data_str):
+  if data_str is None:
+    return ''
+  else:
+    ''' Returns the string without non ASCII characters'''
+    stripped = (c for c in data_str if 0 < ord(c) < 127)
+    return ''.join(stripped)
+
+### fix abbreviation
+def fix_abbreviation(data_str):
+    data_str = data_str.lower()
+    data_str = re.sub(r'\bthats\b', 'that is', data_str)
+    data_str = re.sub(r'\bive\b', 'i have', data_str)
+    data_str = re.sub(r'\bim\b', 'i am', data_str)
+    data_str = re.sub(r'\bya\b', 'yeah', data_str)
+    data_str = re.sub(r'\bcant\b', 'can not', data_str)
+    data_str = re.sub(r'\bdont\b', 'do not', data_str)
+    data_str = re.sub(r'\bwont\b', 'will not', data_str)
+    data_str = re.sub(r'\bid\b', 'i would', data_str)
+    data_str = re.sub(r'\bwtf\b', 'what the fuck', data_str)
+    data_str = re.sub(r'\bwth\b', 'what the hell', data_str)
+    data_str = re.sub(r'\br\b', 'are', data_str)
+    data_str = re.sub(r'\bu\b', 'you', data_str)
+    data_str = re.sub(r'\bk\b', 'OK', data_str)
+    data_str = re.sub(r'\bsux\b', 'sucks', data_str)
+    data_str = re.sub(r'\bno+\b', 'no', data_str)
+    data_str = re.sub(r'\bcoo+\b', 'cool', data_str)
+    data_str = re.sub(r'rt\b', '', data_str)
+    data_str = data_str.strip()
+    return data_str
+
+### remove irrelevant features/stopwords + lemmatize
+def remove_features(data_str):
+    # compile regex
+    url_re = re.compile('https?://(www.)?\w+\.\w+(/\w+)*/?')
+    punc_re = re.compile('[%s]' % re.escape(string.punctuation))
+    num_re = re.compile('(\\d+)')
+    mention_re = re.compile('@(\w+)')
+    alpha_num_re = re.compile("^[a-z0-9_.]+$")
+    # convert to lowercase
+    data_str = data_str.lower()
+    # remove hyperlinks
+    data_str = url_re.sub(' ', data_str)
+    # remove @mentions
+    data_str = mention_re.sub(' ', data_str)
+    # remove punctuation
+    data_str = punc_re.sub(' ', data_str)
+    # remove numeric 'words'
+    data_str = num_re.sub(' ', data_str)
+    # remove non a-z 0-9 characters and words shorter than 1 characters
+    list_pos = 0
+    cleaned_str = ''
+    for word in data_str.split():
+        word = lem.lemmatize(word)
+        if list_pos == 0:
+            if alpha_num_re.match(word) and len(word) > 1 and word not in stop_words:
+                cleaned_str = word
+            else:
+                cleaned_str = ' '
+        else:
+            if alpha_num_re.match(word) and len(word) > 1 and word not in stop_words:
+                cleaned_str = cleaned_str + ' ' + word
+            else:
+                cleaned_str += ' '
+        list_pos += 1
+    # remove unwanted space, *.split() will automatically split on
+    # whitespace and discard duplicates, the " ".join() joins the
+    # resulting list into one string.
+    f_output = " ".join(cleaned_str.split())
+    if f_output is None:
+      return ""
+    else:
+      return f_output
+
+### Get sentiment data from nltk
+def get_nltk_sentiment(txt):
+  tmp = sia.polarity_scores(txt)
+  return(tmp['compound'])
+
+
+# Get entire comment information df function 
+def get_comment_df(filepath,url_id):
+
+  # Reading .csv file
+  df = pd.read_csv(filepath,sep=",", encoding='cp1252')
+  df = df[['Item']]
+
+  # Cleaning + apply steps
+  df = df.dropna()
+  df['Item_1'] = df['Item'].apply(strip_non_ascii)
+  df['Item_2'] = df['Item_1'].apply(fix_abbreviation)
+  df['comment_clean'] = df['Item_2'].apply(remove_features)
+  df['vader_score'] = df['comment_clean'].apply(lambda review: sia.polarity_scores(review))
+  df['compound']  = df['vader_score'].apply(lambda score_dict: score_dict['compound'])
+  df['positive']=df['vader_score'].apply(lambda score_dict: score_dict['pos'])
+  df['negative']=df['vader_score'].apply(lambda score_dict: score_dict['neg'])
+  df['neutral']=df['vader_score'].apply(lambda score_dict: score_dict['neu'])
+  df['sentiment'] = df['compound'].apply(lambda c: 'positive' if c > 0.05
+                                                else 'negative' if c < -.05
+                                                else 'neutral')
+  df = df[['Item','comment_clean','sentiment','positive','negative','neutral','compound']]
+
+  # Parsing labels
+  label_count = df['sentiment'].value_counts()
+  labels_df = pd.DataFrame(label_count)
+  labels_df.index.name = 'rownames'
+  labels_df.reset_index(inplace=True)
+
+  # Comment Count
+  comment_count = len(df['Item'])
+
+  # Word Count
+  word_count = df['Item'].str.split().str.len().sum()
+
+  # Label Counts
+  count_positive = labels_df[labels_df['rownames']=="positive"]['sentiment'].mean()
+  count_neutral  = labels_df[labels_df['rownames']=="neutral"]['sentiment'].mean()
+  count_negative = labels_df[labels_df['rownames']=="negative"]['sentiment'].mean()
+
+  # Mean Positive
+  mean_positive = df["positive"].mean()
+
+  # Mean Neutral
+  mean_neutral = df['neutral'].mean()
+
+  # Mean Negative
+  mean_negative = df['negative'].mean()
+
+  # Median Positive
+  med_positive = df["positive"].median()
+
+  # Median Neutral
+  med_neutral = df["neutral"].median()
+
+  # Median Negative
+  med_negative = df['negative'].median()
+
+  # Compound mean
+  overall_sentiment = df['compound'].mean()
+
+  # Putting all output pieces into frame
+  output_frame = pd.DataFrame([[url_id,comment_count,word_count,
+                                count_positive,mean_positive,med_positive,
+                                count_negative,mean_negative,med_negative,
+                                count_neutral,mean_neutral,med_neutral,
+                                overall_sentiment]],
+                                columns = ['likes_n','cmt_n','cmt_wordcount',
+                                           'cmt_positive_n','cmt_positive_mean','cmt_positive_med',
+                                           'cmt_negative_n','cmt_negative_mean','cmt_negative_med',
+                                           'cmt_neutral_n','cmt_neutral_mean','cmt_neutral_med',
+                                           cmt_nltk_sentiment]
+                            )
+  
+  return(output_frame)
+
+
+if __name__ == __main__:
+	pass

@@ -1,0 +1,595 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("G:/My Drive/academics/2122_uic_ms/2022_spring/ids506_health/prostate")
+
+library(tidyverse)
+library(tidymodels)
+library(patchwork)
+library(lubridate)
+library(tidytext)
+library(themis)
+
+dat <- read_csv("data/training_data.csv") %>% 
+  rename(y = survival_7_years)
+
+dat <- dat %>% 
+  filter(survival_1_year == 1)
+```
+
+
+```{r}
+na_table <- function(d){
+  NAs <- colMeans(is.na(d)) %>% data.frame()
+  colnames(NAs) <- c("prop_NA")
+  NAs <- NAs %>% arrange(desc(prop_NA))
+  
+  return(NAs)
+}
+
+na_table(dat)
+```
+
+# Functions
+
+```{r}
+crosstab <- function(dframe, column, y_col) {
+  dframe %>%
+    group_by(!!sym(column), !!sym(y_col)) %>%
+    summarise(n = n()) %>%
+    pivot_wider(id_cols = !!sym(column),
+                names_from = !!sym(y_col),
+                values_from = n) %>% 
+    mutate(
+      `0` = ifelse(is.na(`0`)==1,0,`0`),
+      `1` = ifelse(is.na(`1`)==1,0,`1`),
+    )
+}
+
+xtab <- function(dframe, column, y_col){
+  xtab <- crosstab(dframe, column, y_col) %>% 
+    mutate(survival_ratio = `1` / (`1` + `0`))
+  return(xtab)
+}
+
+distro_table <- function(dframe, column, y_col) {
+  xtab <- crosstab(dframe, column, y_col)
+  
+  plot0 <- xtab %>%
+    pivot_longer(cols = -!!sym(column),
+                 names_to = "yvar",
+                 values_to = "val") %>%
+    ggplot() +
+    aes(x = round(!!sym(column)),
+        y = val,
+        col = yvar %>% factor(),
+        fill = yvar %>% factor()) +
+    scale_fill_viridis_d() + scale_color_viridis_d() +
+    theme_minimal() 
+  
+  p1 <- plot0 + geom_col(position = "stack")+
+    labs(col = "Target Variable",
+         fill = "Target Variable",
+         y = "Count") +
+    theme(legend.position = "none")
+  p2 <- plot0 + geom_col(position = "fill")+
+    labs(col = "Target Variable",
+         fill = "Target Variable",
+         y = "Proportion")
+  p <- (p1 | p2)
+  return(p)
+}
+
+var_na <- function(dframe, column, y_col) {
+  xtab <- crosstab(dframe, column, y_col)
+  newcolname <- paste(column, sep = "")
+  
+  out <- xtab %>%
+    mutate(is_na = ifelse(is.na(!!sym(column)) == 1, 1, 0)) %>%
+    group_by(is_na) %>%
+    summarise(`0` = sum(`0`),
+              `1` = sum(`1`)) %>%
+    mutate(n = (`1` + `0`),
+           survival_ratio = `1` / (`1` + `0`))
+  
+  colnames(out)[1] <- newcolname
+  
+  return(out)
+}
+```
+
+```{r}
+get_na_table <- function(dframe, column, y_col){
+  dt <- var_na(dframe, column, y_col) %>% select(!!sym(column),n,survival_ratio)
+  
+  col <- c(col = column,
+    dt[2,2]/(sum(dt[2])),
+    dt[1,3],
+    dt[2,3]) %>% 
+  as.data.frame() %>% 
+  rename(NAs = n,
+         rate.rest = survival_ratio,
+         rate.NAs  = survival_ratio.1)
+  
+  return(col)
+}
+
+all_na_table <- function(dframe,y_col){
+  names <- colnames(dframe)
+  
+  table <- data.frame()
+  
+  for (i in names){
+    if (i == y_col){
+      break
+    } else {
+      table <- table %>% rbind(
+        get_na_table(dframe,i,y_col)
+      )
+    }
+  }
+  
+  return(table)
+}
+
+all_crosstabs <- function(dframe,y_col){
+  names <- colnames(dframe)
+  table <- data.frame()
+  
+  for (i in names){
+    if (i == y_col){
+      next
+    } else {
+      newtab <- crosstab(dframe,i,y_col) %>% 
+        mutate(
+          variable = i
+        ) %>% 
+        rename(
+          value = !!sym(i)
+        ) %>% 
+        mutate(
+          value = value %>% factor()
+        ) %>% 
+        select(variable,everything())
+      
+      table <- table %>% rbind(newtab)
+    }
+  }
+  return(table)
+}
+```
+
+```{r}
+dist_plot_d <- function(dframe,col,y){
+  plot0 <- dframe %>% 
+    group_by(!!sym(col),!!sym(y)) %>% 
+    summarise(n=n()) %>% 
+    ggplot()+
+    aes(
+      x = !!sym(col) %>% factor(),
+      y = n,
+      fill = !!sym(y) %>% factor(),
+      col  = !!sym(y) %>% factor()
+    )+
+    scale_fill_viridis_d() + scale_color_viridis_d() +
+    theme_minimal()
+  
+  p1 <- plot0 + geom_col(position = "stack")+
+    labs(col = "Target Variable",
+         fill = "Target Variable",
+         y = "Count")+
+    theme(legend.position = "none")
+  p2 <- plot0 + geom_col(position = "fill")+
+    labs(col = "Target Variable",
+         fill = "Target Variable",
+         y = "Proportion")
+  p <- (p1 | p2)
+  return(p)
+}
+
+dist_plot_c <- function(dframe,col,y){
+  plot0 <- dframe %>% 
+    group_by(!!sym(col),!!sym(y)) %>% 
+    summarise(n=n()) %>% 
+    ggplot()+
+    aes(
+      x = !!sym(col) %>% as.numeric(),
+      y = n,
+      fill = !!sym(y) %>% factor(),
+      col  = !!sym(y) %>% factor()
+    )+
+    scale_fill_viridis_d() + scale_color_viridis_d() +
+    theme_minimal()
+  
+  p1 <- plot0 + geom_col(position = "stack")+
+    labs(col = "Target Variable",
+         fill = "Target Variable",
+         y = "Count")+
+    theme(legend.position = "none")
+  p2 <- plot0 + geom_col(position = "fill")+
+    labs(col = "Target Variable",
+         fill = "Target Variable",
+         y = "Proportion")
+  p <- (p1 | p2)
+  return(p)
+}
+```
+
+
+
+```{r eval=FALSE, include=T}
+all_na_tables <- all_na_table(dat,"y")
+all_na_tables[is.na(all_na_tables)] <- 0 
+all_na_tables
+
+write_csv(all_na_tables, "data/all_na_tables.csv")
+```
+# tumor_6_months
+
+```{r}
+xtab(dat,"tumor_6_months","y")
+var_na(dat,"tumor_6_months","y")
+distro_table(dat,"tumor_6_months","y")
+```
+
+# psa_6_months
+
+```{r}
+xtab(dat,"psa_6_months","y")
+var_na(dat,"psa_6_months","y")
+distro_table(dat,"psa_6_months","y")
+```
+
+# psa_1_year
+
+```{r}
+xtab(dat,"psa_1_year","y")
+var_na(dat,"psa_1_year","y")
+distro_table(dat,"psa_1_year","y")
+```
+
+# tumor_1_year
+
+```{r}
+xtab(dat,"tumor_1_year","y")
+var_na(dat,"tumor_1_year","y")
+distro_table(dat,"tumor_1_year","y")
+```
+
+# family_history
+
+```{r}
+xtab(dat,"family_history","y")
+var_na(dat,"family_history","y")
+distro_table(dat,"family_history","y")
+```
+
+# first_degree_history
+
+```{r}
+xtab(dat,"first_degree_history","y")
+var_na(dat,"first_degree_history","y")
+distro_table(dat,"first_degree_history","y")
+```
+
+# previous_cancer
+
+```{r}
+xtab(dat,"previous_cancer","y")
+var_na(dat,"previous_cancer","y")
+distro_table(dat,"previous_cancer","y")
+```
+
+# smoker
+
+```{r}
+xtab(dat,"smoker","y")
+var_na(dat,"smoker","y")
+distro_table(dat,"smoker","y")
+```
+
+# tea
+
+```{r}
+xtab(dat,"tea","y")
+var_na(dat,"tea","y")
+distro_table(dat,"tea","y")
+```
+
+# psa_diagnosis
+
+```{r}
+xtab(dat,"psa_diagnosis","y")
+var_na(dat,"psa_diagnosis","y")
+distro_table(dat,"psa_diagnosis","y")
+```
+# height
+
+```{r}
+xtab(dat,"height","y")
+var_na(dat,"height","y")
+distro_table(dat,"height","y")
+```
+
+# weight
+
+```{r}
+xtab(dat,"weight","y")
+var_na(dat,"weight","y")
+distro_table(dat,"weight","y")
+```
+
+# age
+
+```{r}
+xtab(dat,"age","y")
+var_na(dat,"age","y")
+distro_table(dat,"age","y")
+```
+
+# gleason_score
+
+```{r}
+xtab(dat,"gleason_score","y")
+var_na(dat,"gleason_score","y")
+distro_table(dat,"gleason_score","y")
+```
+
+# tumor_diagnosis
+
+```{r}
+xtab(dat,"tumor_diagnosis","y")
+var_na(dat,"tumor_diagnosis","y")
+distro_table(dat,"tumor_diagnosis","y")
+```
+
+# race
+
+```{r}
+xtab(dat,"race","y")
+var_na(dat,"race","y")
+distro_table(dat,"race","y")
+```
+# Removing NAs
+
+```{r}
+dat_no_na <- dat %>% 
+  filter(
+    !is.na(weight),
+    !is.na(height),
+    !is.na(age),
+    !is.na(gleason_score),
+    !is.na(tumor_diagnosis),
+    !is.na(race)
+  ) %>% 
+  mutate(
+    psa_1_year           = ifelse(is.na(psa_1_year)==1,0,psa_1_year),
+    tumor_1_year         = ifelse(is.na(tumor_1_year)==1,0,tumor_1_year),
+    family_history       = ifelse(is.na(family_history)==1,0,family_history),
+    first_degree_history = ifelse(is.na(first_degree_history)==1,0,first_degree_history),
+    previous_cancer      = ifelse(is.na(previous_cancer)==1,0,previous_cancer),
+    smoker               = ifelse(is.na(smoker)==1,0,smoker),
+    tea                  = ifelse(is.na(tea)==1,0,tea),
+    psa_diagnosis        = ifelse(is.na(psa_diagnosis)==1,0,psa_diagnosis)
+  ) %>% 
+  select(-c(id,tumor_6_months,psa_6_months))
+```
+
+# Dealing with Dates
+
+```{r}
+dat_no_na %>% 
+  transmute(
+    zero_day = ifelse(str_detect(diagnosis_date,"00"),1,0),
+    diagnosis_date = ifelse(zero_day == 1, diagnosis_date, NA),
+    y = y
+  ) %>% 
+  group_by(zero_day,y) %>% 
+  summarise(n=n()) %>% 
+  mutate(sum = sum(n),
+         prop = n/sum)
+  
+1117/(1117+10442)
+```
+
+```{r}
+dat_no_na <- dat_no_na %>% 
+  mutate(
+    # Replacing 00 date values with 01
+    zero_day = ifelse(str_detect(diagnosis_date,"00"),1,0),
+    diagnosis_date = ifelse(zero_day == 0,
+                            diagnosis_date,
+                            str_replace(diagnosis_date, "00","01")),
+    diagnosis_date = paste(diagnosis_date,"2021",sep="") %>% mdy() %>% yday()
+  ) %>% 
+  select(-zero_day) 
+```
+
+# discretes
+
+```{r}
+dat_no_na_d <- dat_no_na %>% 
+  select(t_score,
+         n_score,
+         m_score,
+         stage,
+         race,
+         family_history,
+         first_degree_history,
+         previous_cancer,
+         smoker,
+         side,
+         tea,
+         rd_thrpy,
+         h_thrpy,
+         chm_thrpy,
+         cry_thrpy,
+         brch_thrpy,
+         rad_rem,
+         multi_thrpy,
+         survival_1_year,
+         y)
+
+all_crosstabs(dat_no_na_d,"y") %>% 
+  write_csv("data/discrete_tabs.csv")
+```
+
+
+# diagnosis_date
+
+```{r}
+dist_plot_d(dat_no_na,"diagnosis_date","y")
+```
+
+# gleason_score
+
+```{r}
+dist_plot_c(dat_no_na,"gleason_score","y")
+```
+
+# age
+
+```{r}
+dist_plot_c(dat_no_na,"age","y")
+```
+
+# height
+
+```{r}
+dist_plot_c(dat_no_na,"height","y")
+```
+
+# weight
+
+```{r}
+dist_plot_c(dat_no_na,"weight","y")
+```
+
+# tumor_diagnosis
+
+```{r}
+dist_plot_c(dat_no_na,"tumor_diagnosis","y")
+```
+
+# tumor_6_months
+
+```{r}
+dist_plot_c(dat,"tumor_6_months","y")
+```
+
+# tumor_1_year
+
+```{r}
+dist_plot_c(dat_no_na,"tumor_1_year","y")
+```
+
+# psa_diagnosis
+
+```{r}
+dist_plot_c(dat_no_na,"psa_diagnosis","y")
+```
+
+# psa_6_months
+
+```{r}
+dist_plot_c(dat,"psa_6_months","y")
+```
+
+# psa_1_year
+
+```{r}
+dist_plot_c(dat_no_na,"psa_1_year","y")
+```
+
+# symptoms
+
+```{r}
+symptom_string <- paste(dat_no_na$symptoms,collapse = ',') %>% 
+  str_squish() %>% 
+  str_replace(" ","") %>% 
+  strsplit(",") %>% .[[1]] %>% 
+  matrix() %>% 
+  as.data.frame() %>% 
+  group_by(V1) %>% summarise() %>% 
+  filter(V1 != "NA") %>% rename(symptom = V1)
+```
+
+```{r}
+dat_no_na_symptom <- dat_no_na
+
+stringcheck <- function(dframe,str){
+  newcolname = paste0("symptom_",str,sep="")
+  dframe <- dframe %>% 
+    transmute(
+      !!sym(newcolname) := ifelse(str_detect(symptoms,str),1,0)
+    )
+  return(dframe)
+}
+
+for (i in (1:nrow(symptom_string[1]))){
+  str = paste(symptom_string[i,1])
+  dat_no_na_symptom <- dat_no_na_symptom %>% 
+    cbind(
+      stringcheck(dat_no_na_symptom,str = str)
+    )
+}
+
+dat_no_na_symptom <- dat_no_na_symptom %>% 
+  select(-symptoms)
+
+dat_no_na_symptom[is.na(dat_no_na_symptom)==1] <- 0
+```
+
+```{r}
+library(textrecipes)
+
+recipe(y~.,data = dat_no_na) %>% 
+  step_tokenize(symptoms,options = list(strip_punct = T,
+                                        lowercase = T)) %>% 
+  step_tf(symptoms) %>% 
+  prep() %>% 
+  bake(dat_no_na)
+```
+
+# Cormap
+
+```{r}
+dat_no_na_symptom_c <- dat_no_na %>%
+  select(-c(t_score,n_score,m_score,stage,race,family_history,first_degree_history,
+            previous_cancer,smoker,side,tea,rd_thrpy,h_thrpy,chm_thrpy,cry_thrpy,brch_thrpy,
+            rad_rem,multi_thrpy,survival_1_year,symptoms))
+
+library(ggcorrplot)
+
+
+
+dat_no_na_symptom_c %>% 
+  cor() %>% 
+  round(digits = 4) %>% 
+  ggcorrplot(method = "circle",
+             type = "upper",
+             p.mat = dat_no_na_symptom_c %>% cor_pmat(),
+             ggtheme = ggplot2::theme_minimal,
+             colors = c("#fde725","#ffffff","#440154"),
+             hc.order = FALSE)
+```
+
+# Symptom Tabs
+
+```{r}
+dat_symptoms_only <- dat_no_na_symptom %>% 
+  select(
+    y,
+    starts_with("symptom")
+  )
+
+all_crosstabs(dat_symptoms_only,"y") %>% 
+  write_csv("data/symptom_tabs.csv")
+```

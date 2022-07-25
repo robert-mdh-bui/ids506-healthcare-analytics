@@ -1,0 +1,38 @@
+---
+title: "pptx scratch"
+output: html_document
+---
+
+```{r}
+# R Classics
+library(tidyverse)
+library(tidymodels)
+
+# SPSS data file importer
+library(haven)
+
+# Logistic PCA for binary variables + tools for examining PCA
+library(logisticPCA)
+library(factoextra)
+library(ggfortify)
+
+# Interface with tidymodels objects to derive variable importance
+require(glmnet)
+require(kernlab)
+library(DALEX)
+library(DALEXtra)
+
+# Misc appearance
+library(patchwork)
+library(knitr)
+library(kableExtra)
+
+# setwd("G:/My Drive/academics/2122_uic_ms/2022_spring/ids506_health/HINTS")
+```
+
+
+```{r}
+read_sav("hints5_cycle2_public.sav") %>% 
+  count(EverOfferedAccessRec)
+```
+

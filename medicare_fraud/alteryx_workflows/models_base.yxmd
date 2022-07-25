@@ -1,0 +1,357 @@
+<?xml version="1.0"?>
+<AlteryxDocument yxmdVer="2021.4">
+  <Nodes>
+    <Node ToolID="1">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="78" y="438" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <File RecordLimit="" SearchSubDirs="False" FileFormat="0" OutputFileName="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv</File>
+          <FormatSpecificOptions>
+            <HeaderRow>True</HeaderRow>
+            <IgnoreErrors>False</IgnoreErrors>
+            <AllowShareWrite>False</AllowShareWrite>
+            <ImportLine>1</ImportLine>
+            <FieldLen>254</FieldLen>
+            <SingleThreadRead>False</SingleThreadRead>
+            <IgnoreQuotes>DoubleQuotes</IgnoreQuotes>
+            <Delimeter>,</Delimeter>
+            <QuoteRecordBreak>False</QuoteRecordBreak>
+            <CodePage>28591</CodePage>
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>physician_level_aggregate.csv</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <Dependencies>
+          <Implicit />
+        </Dependencies>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field name="National Provider Identifier" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Gender" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Provider Type" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Count_HCPCS" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Payout_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Allowance_Ratio" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Final_amount_received" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Excess_amount_claimed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Number of Medicare Beneficiaries" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Avg_Number of Medicare Beneficiary/Day Services" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Sum_Total_amount_claimed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Sum_Total_amount_paid" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Sum_Total_amount_allowed" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+            <Field name="Fraud_Label" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv" type="V_String" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="2">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect">
+        <Position x="186" y="438" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <OrderChanged value="False" />
+          <CommaDecimal value="False" />
+          <SelectFields>
+            <SelectField field="Count_HCPCS" selected="True" type="Int32" size="4" />
+            <SelectField field="Avg_Payout_Ratio" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Allowance_Ratio" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Final_amount_received" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Excess_amount_claimed" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Number of Medicare Beneficiaries" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Number of Medicare Beneficiary/Day Services" selected="True" type="Float" size="4" />
+            <SelectField field="Sum_Total_amount_claimed" selected="True" type="Float" size="4" />
+            <SelectField field="Sum_Total_amount_paid" selected="True" type="Float" size="4" />
+            <SelectField field="Sum_Total_amount_allowed" selected="True" type="Float" size="4" />
+            <SelectField field="*Unknown" selected="True" />
+          </SelectFields>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxSelect" />
+    </Node>
+    <Node ToolID="3">
+      <GuiSettings Plugin="Logistic_Regression">
+        <Position x="294" y="438" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="curPage">Customize</Value>
+          <Value name="curTab">advanced</Value>
+          <Value name="lambda_1se">True</Value>
+          <Value name="lambda_min">False</Value>
+          <Value name="Model Name">GLM_ALL</Value>
+          <Value name="Y Var">Fraud_Label</Value>
+          <Value name="X Vars">Gender,Provider Type,Count_HCPCS,Avg_Payout_Ratio,Avg_Allowance_Ratio,Avg_Final_amount_received,Avg_Excess_amount_claimed,Avg_Number of Medicare Beneficiaries,Avg_Number of Medicare Beneficiary/Day Services,Sum_Total_amount_claimed,Sum_Total_amount_paid,Sum_Total_amount_allowed</Value>
+          <Value name="Use Weights">False</Value>
+          <Value name="Weight Vec" />
+          <Value name="regularization">False</Value>
+          <Value name="alpha">0.5</Value>
+          <Value name="standardize_pred">False</Value>
+          <Value name="internal_cv">False</Value>
+          <Value name="nfolds">5</Value>
+          <Value name="lambda">lambda_1se</Value>
+          <Value name="set_seed_internal_cv">False</Value>
+          <Value name="seed_internal_cv">1</Value>
+          <Value name="lambda_no_cv">0.5</Value>
+          <Value name="posClass">
+          </Value>
+          <Value name="Link">logit</Value>
+          <Value name="external_cv">False</Value>
+          <Value name="nfolds_external">5</Value>
+          <Value name="numberTrials">3</Value>
+          <Value name="stratified">False</Value>
+          <Value name="set_seed_external_cv">False</Value>
+          <Value name="external_seed_value">1</Value>
+          <Value name="graph.resolution">1x</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>GLM_ALL</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings Macro="Logistic_Regression/Supporting_Macros/Logistic_Regression.yxmc" EngineDll="Macro" EngineDllEntryPoint="Logistic_Regression/Supporting_Macros/Logistic_Regression.yxmc" />
+    </Node>
+    <Node ToolID="4">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="426" y="510" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_7472_00017f38e00149159e5b0903ffdd7642_\Engine_11600_e16d5de2bdc04a358c0f7054c9bbc0b4_.yxdb</TempFile>
+          <TempFileDataProfiling />
+          <Layout>
+            <ViewMode>Single</ViewMode>
+            <ViewSize value="100" />
+            <View1>
+              <DefaultTab>Report</DefaultTab>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+            <View2 />
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="5">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="426" y="438" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_7472_00017f38e00149159e5b0903ffdd7642_\Engine_11600_c530c88e53be4acbb4e04419d4c31d79_.yxdb</TempFile>
+          <TempFileDataProfiling />
+          <Layout>
+            <ViewMode>Single</ViewMode>
+            <ViewSize value="100" />
+            <View1>
+              <DefaultTab>Report</DefaultTab>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+            <View2 />
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="6">
+      <GuiSettings Plugin="Logistic_Regression">
+        <Position x="294" y="582" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Value name="curPage">Home</Value>
+          <Value name="curTab">advanced</Value>
+          <Value name="lambda_1se">True</Value>
+          <Value name="lambda_min">False</Value>
+          <Value name="Model Name">GLM_SELECT</Value>
+          <Value name="Y Var">Fraud_Label</Value>
+          <Value name="X Vars">Gender,Provider Type,Avg_Payout_Ratio,Avg_Allowance_Ratio,Avg_Number of Medicare Beneficiary/Day Services,Sum_Total_amount_claimed,Sum_Total_amount_allowed</Value>
+          <Value name="Use Weights">False</Value>
+          <Value name="Weight Vec" />
+          <Value name="regularization">True</Value>
+          <Value name="alpha">0.5</Value>
+          <Value name="standardize_pred">True</Value>
+          <Value name="internal_cv">True</Value>
+          <Value name="nfolds">5</Value>
+          <Value name="lambda">lambda_1se</Value>
+          <Value name="set_seed_internal_cv">True</Value>
+          <Value name="seed_internal_cv">1</Value>
+          <Value name="lambda_no_cv">0.5</Value>
+          <Value name="posClass">
+          </Value>
+          <Value name="Link">logit</Value>
+          <Value name="external_cv">True</Value>
+          <Value name="nfolds_external">5</Value>
+          <Value name="numberTrials">3</Value>
+          <Value name="stratified">True</Value>
+          <Value name="set_seed_external_cv">True</Value>
+          <Value name="external_seed_value">1</Value>
+          <Value name="graph.resolution">1x</Value>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>GLM_SELECT</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings Macro="Logistic_Regression/Supporting_Macros/Logistic_Regression.yxmc" EngineDll="Macro" EngineDllEntryPoint="Logistic_Regression/Supporting_Macros/Logistic_Regression.yxmc" />
+    </Node>
+    <Node ToolID="7">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="426" y="582" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_7472_00017f38e00149159e5b0903ffdd7642_\Engine_11600_f36ea51b9c1440ba9beb3e20f7318f00_.yxdb</TempFile>
+          <TempFileDataProfiling />
+          <Layout>
+            <ViewMode>Single</ViewMode>
+            <ViewSize value="100" />
+            <View1>
+              <DefaultTab>Report</DefaultTab>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+            <View2 />
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+    <Node ToolID="8">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.BrowseV2.BrowseV2">
+        <Position x="426" y="654" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <TempFile>C:\Users\rober\AppData\Local\Temp\Engine_7472_00017f38e00149159e5b0903ffdd7642_\Engine_11600_6e3f83e7a63d4491a4a1a3ce66f3d37f_.yxdb</TempFile>
+          <TempFileDataProfiling />
+          <Layout>
+            <ViewMode>Single</ViewMode>
+            <ViewSize value="100" />
+            <View1>
+              <DefaultTab>Report</DefaultTab>
+              <Hints>
+                <Table />
+              </Hints>
+            </View1>
+            <View2 />
+          </Layout>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxBrowseV2" />
+    </Node>
+  </Nodes>
+  <Connections>
+    <Connection>
+      <Origin ToolID="1" Connection="Output" />
+      <Destination ToolID="2" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="3" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Output" />
+      <Destination ToolID="6" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="3" Connection="Interactive Report" />
+      <Destination ToolID="4" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="3" Connection="Reports" />
+      <Destination ToolID="5" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="6" Connection="Reports" />
+      <Destination ToolID="7" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="6" Connection="Interactive Report" />
+      <Destination ToolID="8" Connection="Input" />
+    </Connection>
+  </Connections>
+  <Properties>
+    <Memory default="True" />
+    <GlobalRecordLimit value="0" />
+    <TempFiles default="True" />
+    <Annotation on="True" includeToolName="False" />
+    <ConvErrorLimit value="10" />
+    <ConvErrorLimit_Stop value="False" />
+    <CancelOnError value="False" />
+    <DisableBrowse value="False" />
+    <EnablePerformanceProfiling value="False" />
+    <PredictiveToolsCodePage value="1252" />
+    <DisableAllOutput value="False" />
+    <ShowAllMacroMessages value="False" />
+    <ShowConnectionStatusIsOn value="True" />
+    <ShowConnectionStatusOnlyWhenRunning value="True" />
+    <ZoomLevel value="0" />
+    <LayoutType>Horizontal</LayoutType>
+    <MetaInfo>
+      <NameIsFileName value="True" />
+      <Name>models_base</Name>
+      <Description />
+      <RootToolName />
+      <ToolVersion />
+      <ToolInDb value="False" />
+      <CategoryName />
+      <SearchTags />
+      <Author />
+      <Company />
+      <Copyright />
+      <DescriptionLink actual="" displayed="" />
+      <Example>
+        <Description />
+        <File />
+      </Example>
+      <WorkflowId value="f0696c70-13b4-4353-911b-3695f6c04bb8" />
+      <Telemetry>
+        <PreviousWorkflowId value="cd83e232-966d-4de5-9b24-62a3cc84ef95" />
+        <OriginWorkflowId value="cd83e232-966d-4de5-9b24-62a3cc84ef95" />
+      </Telemetry>
+    </MetaInfo>
+    <Events>
+      <Enabled value="True" />
+    </Events>
+  </Properties>
+</AlteryxDocument>

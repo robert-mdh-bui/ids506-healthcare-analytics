@@ -1,0 +1,337 @@
+---
+title: "modeling"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Packages & Import
+
+```{r}
+setwd("G:/My Drive/academics/2122_uic_ms/2022_spring/ids506_health/prostate")
+
+library(tidyverse)
+library(tidymodels)
+library(discrim)
+library(textrecipes)
+library(patchwork)
+library(lubridate)
+library(tidytext)
+library(kableExtra)
+library(themis)
+library(vip)
+
+dat <- read_csv("data/training_data.csv") %>% 
+  rename(y = survival_7_years)
+```
+
+# Dealing with NAs & date
+
+```{r}
+dat_no_na <- dat %>% 
+  filter(
+    !is.na(weight),
+    !is.na(height),
+    !is.na(age),
+    !is.na(gleason_score),
+    !is.na(tumor_diagnosis),
+    !is.na(race)
+  ) %>% 
+  mutate(
+    psa_1_year           = ifelse(is.na(psa_1_year)==1,0,psa_1_year),
+    tumor_1_year         = ifelse(is.na(tumor_1_year)==1,0,tumor_1_year),
+    family_history       = ifelse(is.na(family_history)==1,0,family_history),
+    first_degree_history = ifelse(is.na(first_degree_history)==1,0,first_degree_history),
+    previous_cancer      = ifelse(is.na(previous_cancer)==1,0,previous_cancer),
+    smoker               = ifelse(is.na(smoker)==1,0,smoker),
+    tea                  = ifelse(is.na(tea)==1,0,tea),
+    psa_diagnosis        = ifelse(is.na(psa_diagnosis)==1,0,psa_diagnosis)
+  ) %>% 
+  select(-c(id,tumor_6_months,psa_6_months)) %>% 
+  mutate(
+    # Replacing 00 date values with 01
+    zero_day = ifelse(str_detect(diagnosis_date,"00"),1,0),
+    diagnosis_date = ifelse(zero_day == 0,
+                            diagnosis_date,
+                            str_replace(diagnosis_date, "00","01")),
+    diagnosis_date = paste(diagnosis_date,"2021",sep="") %>% mdy() %>% yday()
+  ) %>% 
+  select(-zero_day) 
+```
+
+# Modeling
+
+## Converting types
+
+```{r}
+df <- dat_no_na %>% 
+  mutate(
+    race = race %>% factor(),
+    family_history = family_history %>% factor(),
+    first_degree_history = first_degree_history %>% factor(),
+    # Shortening groups
+    tea = case_when(tea == 0 ~ "0.wk",
+                    0 < tea & tea <= 2 ~ "2fewer.wk",
+                    2 < tea & tea <= 7 ~ "7fewer.wk",
+                    7 < tea ~ "7more.wk")
+  ) %>% 
+  mutate(y = y %>% factor())
+
+rm(dat,dat_no_na)
+```
+
+## Splitting
+
+```{r}
+set.seed(8675309)
+splits <- initial_split(df,
+                        prop = .8,
+                        strata = y)
+
+d.train <- training(splits)
+d.test  <- testing(splits)
+```
+
+## Preprocessing Recipe
+
+```{r}
+recipe <- recipe(y~., data = d.train) %>% 
+  step_relevel(side,    ref_level = "left") %>% 
+  step_relevel(t_score, ref_level = "T1a") %>% 
+  step_relevel(n_score, ref_level = "N0") %>% 
+  step_relevel(m_score, ref_level = "M0") %>% 
+  step_relevel(stage,   ref_level = "I") %>% 
+  step_relevel(race,    ref_level = "4") %>% 
+  step_relevel(family_history, ref_level = "0") %>% 
+  step_relevel(first_degree_history, ref_level = "0") %>% 
+  step_relevel(tea,     ref_level = "0.wk") %>% 
+  step_tokenize(symptoms,options = list(strip_punct = T,
+                                        lowercase = T)) %>% 
+  step_tf(symptoms) %>% 
+  step_dummy(t_score,n_score,m_score,stage,race,family_history,first_degree_history,side,tea) %>% 
+  step_zv(all_numeric_predictors())
+```
+
+
+```{r}
+recipe_manual <- recipe(y~., data = d.train) %>% 
+  step_tokenize(symptoms,options = list(strip_punct = T,
+                                        lowercase = T)) %>% 
+  step_tf(symptoms,prefix = "") %>%  
+  step_zv(all_numeric_predictors()) 
+  
+df_proc <- recipe_manual %>% 
+  prep() %>% 
+  bake(df)
+
+df_train <- recipe_manual %>% 
+  prep() %>% 
+  bake(d.train)
+  
+df_test <- recipe_manual %>% 
+  prep() %>% 
+  bake(d.test)
+```
+
+# Blind a-priori Model
+
+```{r}
+apriori <- df_proc %>% group_by(y) %>% summarise(n=n()) %>% mutate(prop = n/sum(n)) %>% .$prop
+
+blind <- function(dframe){
+  dframe %>% 
+    mutate(
+      y_hat = sample(c("0","1"), replace = T, prob = apriori, size = nrow(dframe))
+    )
+}
+
+
+
+set.seed(8675309)
+blind(df_proc) %>% 
+  mutate(y_hat = y_hat %>% factor()) %>% 
+  accuracy(truth = y,
+           estimate = y_hat,
+           event_level = "first") %>% 
+  rbind(
+    blind(df_proc) %>% 
+      mutate(y_hat = y_hat %>% factor()) %>% 
+      f_meas(truth = y,
+              estimate = y_hat,
+              event_level = "first")
+  ) %>% 
+  mutate(model = "Naive Sampling") %>% 
+  select(model, .metric,.estimate)
+  
+```
+
+
+# Manual Model 1
+
+```{r}
+manual1 <- function(dframe) {
+  dframe %>%
+    mutate(
+      y_hat = case_when(
+        # 1-yr Dead Rule
+        survival_1_year == 0 ~ 0,
+        # Stage Rule
+        stage %in% c("IIB", "III", "IV") ~ 0,
+        # Metastatisation Rule
+        m_score != "M0" ~ 0,
+        n_score != "N0" ~ 0,
+        
+        # Symptoms Rule
+        `_symptoms_o01` == 1 ~ 0,
+        `_symptoms_o08` == 1 ~ 0,
+        `_symptoms_o09` == 1 ~ 0,
+        `_symptoms_o10` == 1 ~ 0,
+        `_symptoms_p01` == 1 ~ 0,
+        `_symptoms_p02` == 1 ~ 0,
+        `_symptoms_p03` == 1 ~ 0,
+        `_symptoms_s10` == 1 ~ 0,
+        TRUE ~ 1
+      )
+    )
+}
+
+
+set.seed(8675309)
+manual1(df_proc) %>% 
+  mutate(y_hat = y_hat %>% factor()) %>% 
+  accuracy(truth = y,
+           estimate = y_hat,
+           event_level = "first") %>% 
+  rbind(
+    manual1(df_proc) %>% 
+      mutate(y_hat = y_hat %>% factor()) %>% 
+      f_meas(truth = y,
+              estimate = y_hat,
+              event_level = "first")
+  ) %>% 
+  mutate(model = "Manual") %>% 
+  select(model, .metric,.estimate)
+```
+
+# Naive Bayes
+
+```{r}
+model_nb <- 
+  naive_Bayes() %>% 
+  set_mode("classification") %>% 
+  set_engine("naivebayes")
+
+wf_nb <- workflow() %>% 
+  add_model(model_nb) %>% 
+  add_recipe(recipe)
+
+fit_nb <- wf_nb %>% 
+  fit(d.train)
+
+fit_nb_test <- wf_nb %>% last_fit(splits)
+
+preds_nb <- fit_nb_test %>% collect_predictions()
+
+preds_nb %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_nb %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  rbind(
+    preds_nb %>% 
+      f_meas(truth = y,
+             estimate = .pred_class,
+             event_level = "first")
+  )%>% 
+  mutate(model = "Naive Bayes") %>% 
+  select(model, .metric,.estimate)
+```
+
+# Lean GLM model (no demographic info) + replacing height/weight w/ BMI-based obesity
+
+```{r}
+recipe_lean <- recipe(y~., data = d.train) %>% 
+  step_relevel(t_score, ref_level = "T1a") %>% 
+  step_relevel(n_score, ref_level = "N0") %>% 
+  step_relevel(m_score, ref_level = "M0") %>% 
+  step_relevel(stage,   ref_level = "I") %>% 
+  step_tokenize(symptoms,options = list(strip_punct = T,
+                                        lowercase = T)) %>% 
+  step_tf(symptoms) %>% 
+  step_mutate(
+    bmi = 703*weight/(height)^2,
+    wgt_class = case_when(bmi < 18.5~"underweight",
+                          18.5 <= bmi & bmi < 25 ~ "normal",
+                          25.0 <= bmi & bmi < 30 ~ "overweight",
+                          30.0 <= bmi ~ "obese"
+                          ),
+  ) %>% 
+  step_relevel(wgt_class, ref_level = "normal") %>% 
+  step_mutate(psa_delta1   = psa_1_year - psa_diagnosis,
+              tumor_delta1 = tumor_1_year - tumor_diagnosis) %>% 
+  step_rm(
+    c(diagnosis_date,race,age,height,weight,bmi,family_history,first_degree_history,previous_cancer,tea,side,
+      tumor_diagnosis,tumor_1_year,
+      psa_1_year,psa_diagnosis)
+  ) %>% 
+  step_dummy(t_score,n_score,m_score,stage,wgt_class) %>% 
+  step_zv(all_numeric_predictors())
+```
+
+```{r}
+recipe_lean %>% prep() %>% bake(d.train) %>% colnames()
+```
+
+
+```{r}
+model_glm_lean <- 
+  logistic_reg() %>% 
+  set_engine("glm")
+
+wf_glm_lean <- workflow() %>% 
+  add_model(model_glm_lean) %>% 
+  add_recipe(recipe_lean)
+
+fit_glm_lean <- wf_glm_lean %>% 
+  fit(d.train)
+
+tidy(fit_glm_lean) %>% 
+  mutate(odds_ratio = round(exp(estimate),2)) %>% 
+  mutate(sig        = case_when(p.value <= .001 ~ "***",
+                                p.value <= .01 & p.value > 0.001 ~ "**",
+                                p.value <= .05 & p.value > 0.01 ~ "*")) %>% 
+  select(term, odds_ratio, p.value, sig) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(p.value)
+
+fit_glm_lean_test <- wf_glm_lean %>% last_fit(splits)
+
+preds_glm_lean <- fit_glm_lean_test %>% collect_predictions()
+
+preds_glm_lean %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_glm_lean %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  )%>% 
+  rbind(
+    preds_glm_lean %>% 
+      f_meas(truth = y,
+               estimate = .pred_class,
+               event_level = "first")
+  ) %>% 
+  mutate(model = "Lean-GLM") %>% 
+  select(model, .metric,.estimate)
+```
+

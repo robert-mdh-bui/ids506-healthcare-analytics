@@ -1,0 +1,631 @@
+---
+title: "unified_modeling"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("G:/My Drive/academics/2122_uic_ms/2022_spring/ids506_health/prostate")
+
+library(tidyverse)
+library(tidymodels)
+library(textrecipes)
+library(discrim)
+library(patchwork)
+library(lubridate)
+library(tidytext)
+library(themis)
+library(vip)
+library(kableExtra)
+
+dat <- read_csv("data/training_data.csv") %>% 
+  rename(y = survival_7_years) %>% 
+  mutate(y = y %>% factor()) %>% 
+  # Removing NAs
+  drop_na(
+    # No default variables
+    weight,height,age,
+    # Essential variables
+    gleason_score,psa_diagnosis,tumor_diagnosis
+  ) %>% 
+  # Mutations
+  mutate(
+    # Imputing for PSA and tumor size
+    psa_1_year           = case_when(!is.na(psa_1_year)                       ~ psa_1_year,
+                                     is.na(psa_1_year) & !is.na(psa_6_months) ~ psa_6_months,
+                                     is.na(psa_1_year) & is.na(psa_6_months)  ~ psa_diagnosis,
+                                     is.na(psa_1_year) & is.na(psa_6_months) & is.na(psa_diagnosis) ~ 0),
+    tumor_1_year         = case_when(!is.na(tumor_1_year)                         ~ tumor_1_year,
+                                     is.na(tumor_1_year) & !is.na(tumor_6_months) ~ tumor_6_months,
+                                     is.na(tumor_1_year) & is.na(tumor_6_months)  ~ tumor_diagnosis,
+                                     is.na(tumor_1_year) & is.na(tumor_6_months) & is.na(tumor_diagnosis) ~ 0),
+    # Family History imputation
+    family_history       = ifelse(is.na(family_history)==1,       0,family_history),
+    family_history       = family_history %>% factor(),
+    first_degree_history = ifelse(is.na(first_degree_history)==1, 0,first_degree_history),
+    first_degree_history = first_degree_history %>% factor(),
+    # Personal History imputation
+    previous_cancer      = ifelse(is.na(previous_cancer)==1,      0,previous_cancer),
+    smoker               = ifelse(is.na(smoker)==1,               0,smoker)
+  )
+
+newdata <- read_csv("data/(name)_score.csv")
+```
+
+# Splitting
+
+```{r}
+set.seed(8675309)
+splits <- initial_split(dat,
+                        prop = .8,
+                        strata = y)
+
+d.train <- training(splits)
+d.test  <- testing(splits)
+cv.fold <- vfold_cv(d.train, v = 4)
+```
+
+# Processing Recipes
+
+```{r}
+rc_symptoms_only <-
+  recipe(y ~ .,data = d.train) %>%
+  # Parsing symptoms
+  step_tokenize(symptoms,options = list(strip_punct = T,
+                                        lowercase   = T)) %>% 
+  step_tf(symptoms) 
+
+rc <- rc_symptoms_only %>% 
+  # Removing unused features
+  step_rm(id,diagnosis_date,tumor_6_months,psa_6_months,tea,race) %>%
+  # Releveling
+  step_relevel(side,    ref_level = "left") %>% 
+  step_relevel(t_score, ref_level = "T1a") %>% 
+  step_relevel(n_score, ref_level = "N0") %>% 
+  step_relevel(m_score, ref_level = "M0") %>% 
+  step_relevel(stage,   ref_level = "I") %>% 
+  step_relevel(family_history, ref_level = "0") %>% 
+  step_relevel(first_degree_history, ref_level = "0") %>% 
+  # Dummy variable creation
+  step_dummy(t_score,n_score,m_score,stage,family_history,first_degree_history,side)
+  
+recipe_base <- rc %>% 
+  step_zv(all_numeric_predictors())
+
+recipe_engi <- rc %>% 
+  # Mutations
+  step_mutate(bmi = 703*weight/(height)^2,
+              # Creating weight classes (obese/overweight/underweight/norm)
+              wgt_class = case_when(bmi < 18.5~"underweight",
+                                    18.5 <= bmi & bmi < 25 ~ "normal",
+                                    25.0 <= bmi & bmi < 30 ~ "overweight",
+                                    30.0 <= bmi ~ "obese"),
+              wgt_class = wgt_class %>% factor(),
+              # Creating PSA/tumor size delta (is it growing?)
+              psa_delta1   = psa_1_year - psa_diagnosis,
+              tumor_delta1 = tumor_1_year - tumor_diagnosis) %>%
+  # Releveling for wgt_class
+  step_relevel(wgt_class, ref_level = "normal") %>% 
+  # Dummy for weight classes 
+  step_dummy(wgt_class) %>% 
+  # Removing unused height/weight/bmi to keep engineered features
+  step_rm(height,weight,bmi) %>% 
+  step_zv(all_numeric_predictors())
+
+recipe_engi_norm <- recipe_engi %>% step_normalize(all_numeric_predictors())
+```
+
+```{r}
+rc_symptoms_only
+recipe_base
+recipe_engi
+recipe_engi_norm
+```
+
+# Simple Models
+
+## Blind Model
+
+```{r}
+probs.train <- d.train %>% group_by(y) %>% summarise(n=n()) %>% transmute(prop = n/sum(n)) %>% .$prop
+
+blind <- function(dframe){
+  dframe %>% 
+    mutate(
+      y_hat = sample(c("0","1"), replace = T, prob = probs.train, size = nrow(dframe))
+    )
+}
+
+set.seed(8675309)
+blind(d.test) %>% 
+  mutate(y_hat = y_hat %>% factor()) %>% 
+  accuracy(truth = y,
+           estimate = y_hat,
+           event_level = "first") %>% 
+  rbind(
+    blind(d.test) %>% 
+      mutate(y_hat = y_hat %>% factor()) %>% 
+      f_meas(truth = y,
+              estimate = y_hat,
+              event_level = "first")
+  ) %>% 
+  mutate(model = "Naive Sampling") %>% 
+  select(model, .metric,.estimate) %>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+```
+## Manual Model
+
+```{r}
+manual1 <- function(dframe) {
+  dframe %>%
+    mutate(
+      y_hat = case_when(
+        # 1-yr Dead Rule
+        survival_1_year == 0 ~ 0,
+        # Stage Rule
+        stage %in% c("IIB", "III", "IV") ~ 0,
+        # Metastatisation Rule
+        m_score != "M0" ~ 0,
+        n_score != "N0" ~ 0,
+        
+        # Symptoms Rule
+        `tf_symptoms_o01` == 1 ~ 0,
+        `tf_symptoms_o08` == 1 ~ 0,
+        `tf_symptoms_o09` == 1 ~ 0,
+        `tf_symptoms_o10` == 1 ~ 0,
+        `tf_symptoms_p01` == 1 ~ 0,
+        `tf_symptoms_p02` == 1 ~ 0,
+        `tf_symptoms_p03` == 1 ~ 0,
+        `tf_symptoms_s10` == 1 ~ 0,
+        TRUE ~ 1
+      )
+    )
+}
+
+d.test.proc <- rc_symptoms_only %>% prep() %>% bake(d.test)
+
+set.seed(8675309)
+manual1(d.test.proc) %>% 
+  mutate(y_hat = y_hat %>% factor()) %>% 
+  accuracy(truth = y,
+           estimate = y_hat,
+           event_level = "first") %>% 
+  rbind(
+    manual1(d.test.proc) %>% 
+      mutate(y_hat = y_hat %>% factor()) %>% 
+      f_meas(truth = y,
+              estimate = y_hat,
+              event_level = "first")
+  ) %>% 
+  mutate(model = "Manual") %>% 
+  select(model, .metric,.estimate)%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+```
+
+## Naive Bayes
+
+```{r}
+model_nb <- 
+  naive_Bayes() %>% 
+  set_mode("classification") %>% 
+  set_engine("naivebayes")
+
+wf_nb <- workflow() %>% 
+  add_model(model_nb) %>% 
+  add_recipe(recipe_base)
+
+fit_nb <- wf_nb %>% 
+  fit(d.train)
+
+fit_nb_test <- wf_nb %>% last_fit(splits)
+
+preds_nb <- fit_nb_test %>% collect_predictions()
+
+preds_nb %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_nb %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  rbind(
+    preds_nb %>% 
+      f_meas(truth = y,
+             estimate = .pred_class,
+             event_level = "first")
+  )%>% 
+  mutate(model = "Naive Bayes") %>% 
+  select(model, .metric,.estimate)%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+```
+
+
+## Unengineered GLM
+
+```{r}
+model_glm <- 
+  logistic_reg() %>% 
+  set_engine("glm")
+
+wf_glm <- workflow() %>% 
+  add_model(model_glm) %>% 
+  add_recipe(recipe_base)
+
+fit_glm <- wf_glm %>% 
+  fit(d.train)
+
+tidy(fit_glm) %>% 
+  mutate(odds_ratio = round(exp(estimate),2)) %>% 
+  mutate(sig        = case_when(p.value <= .001 ~ "***",
+                                p.value <= .01 & p.value > 0.001 ~ "**",
+                                p.value <= .05 & p.value > 0.01 ~ "*")) %>% 
+  select(term, odds_ratio, p.value, sig) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(p.value)%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+fit_glm_test <- wf_glm %>% last_fit(splits)
+
+preds_glm <- fit_glm_test %>% collect_predictions()
+
+preds_glm %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_glm %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  mutate(model = "base-GLM") %>% 
+  select(model, .metric,.estimate)%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+
+
+```
+# Feature-Engineered Models
+
+## Engineered unregularised GLM
+
+```{r}
+wf_glm_engi <- workflow() %>% 
+  add_model(model_glm) %>% 
+  add_recipe(recipe_engi_norm)
+
+fit_glm_engi <- wf_glm_engi %>% 
+  fit(d.train)
+
+tidy(fit_glm_engi) %>% 
+  mutate(sig        = case_when(p.value <= .001 ~ "***",
+                                p.value <= .01 & p.value > 0.001 ~ "**",
+                                p.value <= .05 & p.value > 0.01 ~ "*")) %>% 
+  select(term, estimate, p.value, sig) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(p.value)%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+
+fit_glm_engi_test <- wf_glm_engi %>% last_fit(splits)
+
+preds_glm_engi <- fit_glm_engi_test %>% collect_predictions()
+
+preds_glm_engi %>% 
+  accuracy(truth = y,
+           estimate = .pred_class,
+           event_level = "first") %>% 
+  rbind(
+    preds_glm_engi %>% 
+      roc_auc(truth = y,
+               estimate = .pred_0,
+               event_level = "first")
+  ) %>% 
+  mutate(model = "engineered-GLM") %>% 
+  select(model, .metric,.estimate)%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+```
+## Elastic-net GLM
+
+```{r}
+model_glmnet_elastic <- 
+  logistic_reg(
+    penalty = tune(),
+    mixture = tune()
+  ) %>% 
+  set_engine("glmnet")
+
+wf_glmnet_elastic <- workflow() %>% 
+  add_model(model_glmnet_elastic) %>% 
+  add_recipe(recipe_engi_norm)
+
+grid_glmnet_elastic <- grid_regular(
+  penalty(),
+  mixture(),
+  levels = 6
+)
+```
+
+```{r eval=FALSE, include=TRUE}
+set.seed(8675309)
+tune_glmnet_elastic <- wf_glmnet_elastic %>% 
+  tune_grid(resamples = cv.fold,
+            grid = grid_glmnet_elastic,
+            control = control_grid(save_pred = T),
+            metrics = metric_set(accuracy))
+
+write_rds(tune_glmnet_elastic,"models/tuning/tune_glmnet_elastic.rds")
+```
+
+```{r}
+tune_glmnet_elastic <- read_rds("models/tuning/tune_glmnet_elastic.rds")
+
+best_glmnet_elastic <- tune_glmnet_elastic %>% 
+  select_best(metric = "accuracy")
+
+tune_glmnet_elastic %>% 
+  collect_metrics() %>% 
+  ggplot(aes(x = penalty,
+             y = mean,
+             col = mixture %>% factor())) +
+  geom_point()+
+  geom_line()+
+  labs(
+    y = "accuracy",
+    col = "Reg. Type"
+  )+
+  scale_x_log10()+
+  scale_color_viridis_d()
+
+lastfit_glmnet_elastic <- wf_glmnet_elastic %>% 
+  finalize_workflow(best_glmnet_elastic) %>% 
+  last_fit(splits) 
+
+lastfit_glmnet_elastic %>% 
+  extract_workflow() %>% 
+  tidy() %>% 
+  select(-penalty) %>% 
+  filter(term != "(Intercept)") %>% 
+  arrange(desc(abs(estimate)))%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+
+fit_glmnet_elastic <- wf_glmnet_elastic %>% 
+  finalize_workflow(best_glmnet_elastic) %>% 
+  fit(data = d.train) 
+
+fit_glmnet_elastic %>%
+  pull_workflow_fit() %>%
+  vip(geom = "point")
+```
+
+## xgBoost
+
+```{r}
+model_xgboost <- 
+  boost_tree(
+    trees      = 1000,
+    tree_depth = tune(),
+    min_n      = tune(),
+    loss_reduction = tune(),
+    sample_size = tune(),
+    mtry       = tune(),
+    learn_rate = tune()
+  ) %>% 
+  set_engine("xgboost") %>% 
+  set_mode("classification")
+
+wf_xgboost <- workflow() %>% 
+  add_model(model_xgboost) %>% 
+  add_recipe(recipe_engi)
+
+grid_xgboost <- grid_latin_hypercube(
+  tree_depth(),
+  min_n(),
+  loss_reduction(),
+  sample_size = sample_prop(),
+  finalize(mtry(),d.train),
+  learn_rate(),
+  size = 36
+)
+
+```
+
+```{r eval=FALSE, include=TRUE}
+set.seed(8675309)
+tune_xgboost <- wf_xgboost %>% 
+  tune_grid(resamples = cv.fold,
+            grid = grid_xgboost,
+            control = control_grid(save_pred = T),
+            metrics = metric_set(accuracy))
+
+write_rds(tune_xgboost,"models/tuning/tune_xgboost.rds")
+```
+
+```{r}
+tune_xgboost <- read_rds("models/tuning/tune_xgboost.rds")
+
+best_xgboost <- tune_xgboost %>% 
+  select_best(metric = "accuracy")
+
+tune_xgboost %>% 
+  collect_metrics() %>% 
+  select(mean,mtry:sample_size) %>% 
+  pivot_longer(mtry:sample_size,
+               values_to = "value",
+               names_to  = "parameter") %>% 
+  ggplot(aes(value, mean, color = parameter)) +
+  geom_point(alpha = 0.8, show.legend = FALSE) +
+  facet_wrap(~parameter, scales = "free_x") +
+  labs(x = NULL, y = "accuracy")
+
+set.seed(8675309)
+lastfit_xgboost <- wf_xgboost %>% 
+  finalize_workflow(best_xgboost) %>% 
+  last_fit(splits) 
+
+set.seed(8675309)
+fit_xgboost <- wf_xgboost %>% 
+  finalize_workflow(best_xgboost) %>% 
+  fit(data = d.train)
+
+write_rds(fit_xgboost,"models/fit_xgboost.rds")
+
+set.seed(8675309)
+fit_xgboost %>%
+  pull_workflow_fit() %>%
+  vip(geom = "point")
+```
+
+## Screening Step + Model: 
+
+```{r}
+# Stacking a check for survival_1_year on top of any fitted model
+manual_stack <- function(dframe,modelfit){
+  df_man <- dframe[dframe$survival_1_year == min(dframe$survival_1_year),] %>% 
+    mutate(.pred_class = 0)
+  df_alg <- dframe[dframe$survival_1_year != min(dframe$survival_1_year),]
+  df_alg <- df_alg %>% cbind(predict(modelfit, new_data = df_alg))
+  
+  result <- rbind(df_man,df_alg)
+  return(result)
+}
+```
+
+# Metrics
+
+```{r}
+preds_blind <- 
+  blind(d.test) %>% 
+  transmute(.pred_class = y_hat %>% factor(),y=y)
+
+preds_manual1 <- 
+  manual1(d.test.proc) %>% 
+  transmute(.pred_class = y_hat %>% factor(),y=y)
+
+preds_nb             <- fit_nb_test            %>% collect_predictions()
+preds_glm            <- fit_glm_test           %>% collect_predictions()
+preds_glm_engi       <- fit_glm_engi_test      %>% collect_predictions()
+preds_glmnet_elastic <- lastfit_glmnet_elastic %>% collect_predictions()
+preds_xgboost        <- lastfit_xgboost        %>% collect_predictions()
+```
+
+```{r}
+metrics_blind <- 
+  preds_blind %>% accuracy(truth=y,estimate=.pred_class) %>% 
+  rbind(preds_blind %>% f_meas(truth=y,estimate=.pred_class)) %>% 
+  mutate(model = "Naive Sampling") %>% 
+  select(model, .metric,.estimate) %>% 
+  pivot_wider(model,names_from=.metric,values_from=.estimate)
+
+metrics_manual1 <- 
+  preds_manual1 %>% accuracy(truth=y,estimate=.pred_class) %>% 
+  rbind(preds_manual1 %>% f_meas(truth=y,estimate=.pred_class)) %>% 
+  mutate(model = "Manual Rules") %>% 
+  select(model, .metric,.estimate) %>% 
+  pivot_wider(model,names_from=.metric,values_from=.estimate)
+
+metrics_nb <- 
+  preds_nb %>% accuracy(truth=y,estimate=.pred_class) %>% 
+  rbind(preds_nb %>% f_meas(truth=y,estimate=.pred_class)) %>% 
+  mutate(model = "Naive Bayes") %>% 
+  select(model, .metric,.estimate) %>% 
+  pivot_wider(model,names_from=.metric,values_from=.estimate)
+
+metrics_glm <- 
+  preds_glm %>% accuracy(truth=y,estimate=.pred_class) %>% 
+  rbind(preds_glm %>% f_meas(truth=y,estimate=.pred_class)) %>% 
+  mutate(model = "base GLM") %>% 
+  select(model, .metric,.estimate) %>% 
+  pivot_wider(model,names_from=.metric,values_from=.estimate)
+
+metrics_glm_engi <- 
+  preds_glm_engi %>% accuracy(truth=y,estimate=.pred_class) %>% 
+  rbind(preds_glm_engi %>% f_meas(truth=y,estimate=.pred_class)) %>% 
+  mutate(model = "engineered GLM") %>% 
+  select(model, .metric,.estimate) %>% 
+  pivot_wider(model,names_from=.metric,values_from=.estimate)
+
+metrics_glmnet_elastic <- 
+  preds_glmnet_elastic %>% accuracy(truth=y,estimate=.pred_class) %>% 
+  rbind(preds_glmnet_elastic %>% f_meas(truth=y,estimate=.pred_class)) %>% 
+  mutate(model = "Elastic-net GLM") %>% 
+  select(model, .metric,.estimate) %>% 
+  pivot_wider(model,names_from=.metric,values_from=.estimate)
+
+metrics_xgboost <- 
+  preds_xgboost %>% accuracy(truth=y,estimate=.pred_class) %>% 
+  rbind(preds_xgboost %>% f_meas(truth=y,estimate=.pred_class)) %>% 
+  mutate(model = "xgBoost") %>% 
+  select(model, .metric,.estimate) %>% 
+  pivot_wider(model,names_from=.metric,values_from=.estimate)
+```
+
+```{r}
+tmptable <- metrics_blind %>% 
+  rbind(metrics_manual1,
+        metrics_nb,
+        metrics_glm) 
+
+tmptable %>% 
+  mutate(
+    lift = (accuracy/min(tmptable$accuracy)-1)
+  ) %>% 
+  arrange(accuracy)%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+
+metrics_table <- 
+  rbind(metrics_blind,
+      metrics_manual1,
+      metrics_nb,
+      metrics_glm,
+      metrics_glm_engi,
+      metrics_glmnet_elastic,
+      metrics_xgboost) 
+
+metrics_table %>% 
+  mutate(
+    lift = (accuracy/min(metrics_table$accuracy)-1)
+  ) %>% 
+  arrange(accuracy)%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+```
+
+```{r}
+preds_manual_xgboost <- manual_stack(d.test,fit_xgboost) %>% 
+  transmute(.pred_class = .pred_class %>% factor(),y=y) 
+
+preds_manual_glmnet <- manual_stack(d.test,fit_glmnet_elastic) %>% 
+  transmute(.pred_class = .pred_class %>% factor(),y=y) 
+
+metrics_manual_xgboost <- 
+  preds_manual_xgboost %>% 
+  accuracy(truth=y,estimate=.pred_class) %>% 
+  rbind(preds_manual_xgboost %>% f_meas(truth=y,estimate=.pred_class)) %>% 
+  mutate(model = "Manual + xgBoost") %>% 
+  select(model, .metric,.estimate) %>% 
+  pivot_wider(model,names_from=.metric,values_from=.estimate)
+
+metrics_manual_glmnet <- 
+  preds_manual_glmnet %>% 
+  accuracy(truth=y,estimate=.pred_class) %>% 
+  rbind(preds_manual_glmnet %>% f_meas(truth=y,estimate=.pred_class)) %>% 
+  mutate(model = "Manual + Elastic-net") %>% 
+  select(model, .metric,.estimate) %>% 
+  pivot_wider(model,names_from=.metric,values_from=.estimate)
+```
+
+```{r}
+metrics_table %>% 
+  rbind(metrics_manual_xgboost,
+        metrics_manual_glmnet) %>% 
+  mutate(
+    lift = (accuracy/min(metrics_table$accuracy)-1)
+  ) %>% 
+  arrange(accuracy)%>% 
+  kbl() %>% kable_minimal(bootstrap_options = "striped", full_width = F)
+```
+
+

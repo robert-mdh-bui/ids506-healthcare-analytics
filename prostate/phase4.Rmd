@@ -1,0 +1,268 @@
+---
+title: "survival"
+output: html_document
+---
+
+```{r}
+setwd("G:/My Drive/academics/2122_uic_ms/2022_spring/ids506_health/prostate")
+
+library(tidyverse)
+library(tidymodels)
+library(textrecipes)
+library(patchwork)
+library(lubridate)
+library(tidytext)
+library(kableExtra)
+library(survival)
+library(survminer)
+
+
+vir <- viridis::viridis(2)
+```
+
+```{r}
+p4_process <- function(path, is.newdata = FALSE){
+  
+  if (is.newdata == TRUE) {
+    dat <- read_csv(path) 
+  } else {
+    dat <- read_csv(path) %>% 
+      rename(y = survival_7_years) %>% 
+      mutate(y = y %>% factor())
+  }
+  
+  dat <- dat %>%  
+    # Removing NAs
+    drop_na(
+      # No default variables
+      weight,height,age,
+      # Essential variables
+      gleason_score,psa_diagnosis,tumor_diagnosis
+    ) %>% 
+    # Mutations
+    mutate(
+      # Imputing for PSA and tumor size
+      psa_1_year           = case_when(!is.na(psa_1_year)                       ~ psa_1_year,
+                                       is.na(psa_1_year) & !is.na(psa_6_months) ~ psa_6_months,
+                                       is.na(psa_1_year) & is.na(psa_6_months)  ~ psa_diagnosis,
+                                       is.na(psa_1_year) & is.na(psa_6_months) & is.na(psa_diagnosis) ~ 0),
+      tumor_1_year         = case_when(!is.na(tumor_1_year)                         ~ tumor_1_year,
+                                       is.na(tumor_1_year) & !is.na(tumor_6_months) ~ tumor_6_months,
+                                       is.na(tumor_1_year) & is.na(tumor_6_months)  ~ tumor_diagnosis,
+                                       is.na(tumor_1_year) & is.na(tumor_6_months) & is.na(tumor_diagnosis) ~ 0),
+      # Personal History imputation
+      previous_cancer      = ifelse(is.na(previous_cancer)==1,      0,previous_cancer),
+      smoker               = ifelse(is.na(smoker)==1,               0,smoker)
+    ) %>% 
+    # Phase-3 mutations
+    mutate(
+      bmi = 703*weight/(height)^2,
+      # Creating weight classes (obese/overweight/underweight/norm)
+      wgt_under = ifelse(bmi < 18.5,1,0),
+      wgt_norml = ifelse(18.5 <= bmi & bmi < 25,1,0),
+      wgt_overw = ifelse(25.0 <= bmi & bmi < 30,1,0),
+      wgt_obese = ifelse(30.0 <= bmi,1,0),
+      # Creating PSA/tumor size delta (is it growing?)
+      psa_ratio   = (psa_1_year / psa_diagnosis),
+      tumor_ratio = (tumor_1_year / tumor_diagnosis)
+    ) %>% 
+    # Remove redundant cols
+    select(-c(race,height,weight,bmi,id,diagnosis_date,tea,psa_6_months,tumor_6_months,family_history,first_degree_history,side)) %>% 
+    # Renaming therapies for easier grouping
+    rename(thrpy_rd   = rd_thrpy,
+           thrpy_h    = h_thrpy,
+           thrpy_chm  = chm_thrpy,
+           thrpy_cry  = cry_thrpy,
+           thrpy_brch = brch_thrpy,
+           thrpy_rdrm = rad_rem,
+           thrpy_mult = multi_thrpy) 
+    
+
+  df <-
+    recipe(y ~ .,data = dat) %>%
+    # Parsing symptoms
+    step_tokenize(symptoms,options = list(strip_punct = T,
+                                          lowercase   = T)) %>% 
+    step_tf(symptoms) %>% 
+    prep() %>% bake(dat) %>% 
+    select(y,everything()) 
+  
+  
+  return(df)
+}
+```
+
+```{r}
+surv.plot.custom <- function(dframe,group_col){
+  group_col <- enquo(group_col)
+
+  plot.surv <- dframe %>% 
+    mutate(survival_1_year = survival_1_year %>% factor(),
+           `0` = 1 %>% factor()) %>% 
+    pivot_longer(
+      cols = c(survival_1_year,y,`0`),
+      names_to  = "year",
+      values_to = "survive"
+    ) %>% 
+    mutate(year = case_when(year == "y"~7,
+                            year == "0"~0,
+                            T ~ 1),
+           survive = (survive %>% as.numeric())-1) %>% 
+    group_by(!!!group_col,year) %>% 
+    summarise(survrate = mean(survive,na.rm=T),
+              n = n()) %>% 
+    rename(group = !!group_col) 
+  
+  plot.surv %>% 
+    ggplot()+
+    aes(x = year,
+        y = survrate)+
+    geom_step(direction = "vh")+
+    geom_label(aes(label = round(survrate,digits=2),
+                   y = survrate + .05,
+                   x = year + .25),
+               check_overlap = TRUE)+
+    geom_label(aes(x = 5.5,y=.9,
+               label = paste("n =",n)))+
+    geom_point()+
+    xlim(c(-.01,8))+
+    facet_wrap(~group)+
+    scale_color_viridis_d()+
+    theme_minimal()
+}
+
+surv.plot.custom2 <- function(dframe,group_col1,group_col2){
+  group_col1 <- enquo(group_col1)
+  group_col2 <- enquo(group_col2)
+
+  plot.surv <- dframe %>% 
+    mutate(survival_1_year = survival_1_year %>% factor(),
+           `0` = 1 %>% factor()) %>% 
+    pivot_longer(
+      cols = c(survival_1_year,y,`0`),
+      names_to  = "year",
+      values_to = "survive"
+    ) %>% 
+    mutate(year = case_when(year == "y"~7,
+                            year == "0"~0,
+                            T ~ 1),
+           survive = (survive %>% as.numeric())-1) %>% 
+    group_by(!!!group_col1,!!!group_col2,year) %>% 
+    summarise(survrate = mean(survive,na.rm=T),
+              n = n()) %>% 
+    rename(group1 = !!group_col1,
+           group2 = !!group_col2) 
+  
+  plot.surv %>% 
+    ggplot()+
+    aes(x = year,
+        y = survrate,
+        col = group1 %>% factor())+
+    geom_step(direction = "vh")+
+    geom_label(aes(label = round(survrate,digits=2),
+                   y = survrate + .05 + group1/8,
+                   x = year + .25),
+               check_overlap = TRUE)+
+    geom_point()+
+    xlim(c(-.01,8))+
+    facet_grid(rows = vars(group2))+
+    scale_color_viridis_d()+
+    theme_bw()
+}
+```
+
+```{r}
+df <- p4_process("data/training_data.csv")
+colnames(df)
+```
+
+```{r}
+df %>% surv.plot.custom(group_col = thrpy_chm)
+df %>% surv.plot.custom2(group_col1 = thrpy_chm,
+                         group_col2 = stage)
+
+df.surv <- df %>% 
+  mutate(status = ifelse(y == 1,0,1),
+         time = case_when(y == 1 ~ 7,
+                          y == 0 & survival_1_year == 1 ~ 7,
+                          survival_1_year  == 0 ~ 1))
+
+sf <- survfit(Surv(time,status) ~ thrpy_chm,data = df.surv)
+
+library(Cairo)
+ggsurvplot_facet(sf, df.surv,
+                 facet.by = "stage",
+                 palette = viridis::viridis(2))
+```
+
+```{r}
+idx <- function(dframe, is.newdata = F){
+  dframe.idx <- dframe %>% 
+    mutate(
+      treatments = thrpy_rd + thrpy_h + thrpy_chm + thrpy_cry + thrpy_brch + thrpy_rdrm
+    ) %>% 
+    mutate(
+      tumor_index = (tumor_ratio*treatments),
+      psa_index   = (psa_ratio*treatments)
+    ) %>% 
+    select(-c(thrpy_rd,thrpy_h,thrpy_chm,thrpy_cry,thrpy_brch,thrpy_rdrm,thrpy_mult,
+              tumor_diagnosis,psa_diagnosis,tumor_1_year,psa_1_year,
+              tumor_ratio,psa_ratio,treatments))
+  
+  if(is.newdata == F){
+    out <- dframe.idx %>% 
+      mutate(status = ifelse(y == 1,0,1),
+             time = case_when(y == 1 ~ 7,
+                              y == 0 & survival_1_year == 1 ~ 7,
+                              survival_1_year  == 0 ~ 1))
+  } else {
+    out <- dframe.idx %>% 
+      mutate(time = 7)
+  }
+  
+  return(out)
+}
+
+df.idx.surv <- idx(df,is.newdata = F)
+```
+
+```{r}
+set.seed(8675309)
+splits <- initial_split(df,
+                        prop = .8,
+                        strata = y)
+
+d.train <- training(splits) %>% idx(is.newdata = F)
+d.test  <- testing(splits) %>% idx(is.newdata = T)
+
+res.cox <- coxph(Surv(time,status) ~ gleason_score + t_score + n_score + m_score + stage + age + previous_cancer + smoker + 
+                   wgt_under + wgt_norml + wgt_overw +
+                   tf_symptoms_o01 + tf_symptoms_o08 + tf_symptoms_o09 + tf_symptoms_o10 + tf_symptoms_o11 +
+                   tf_symptoms_p01 + tf_symptoms_p02 + tf_symptoms_p03 + tf_symptoms_s04 + tf_symptoms_s07 + 
+                   tf_symptoms_s10 + tf_symptoms_u01 + tf_symptoms_u02 + tf_symptoms_u03 + tf_symptoms_u05 + 
+                   tf_symptoms_u06 + tumor_index + psa_index,
+                 data = d.train, x = T)
+
+res.cox
+```
+
+```{r}
+# Get test set metrics
+library(pec)
+library(pROC)
+preds.test <- predictSurvProb(res.cox,
+                              newdata = d.test,
+                              time = 7) %>% as.vector()
+
+m.test <- d.test %>% select(y) %>% cbind(preds.test) %>% 
+  mutate(y_hat = (ifelse(preds.test >= 0.5,1,0)) %>% as.factor())
+
+roc.test <- roc(m.test$y,m.test$preds)
+roc.test %>% plot()
+
+m.test %>% accuracy(truth = y, estimate = y_hat)
+```
+
+$$
+Index_t = \frac{x_{t}}{x_{0}}\sum_{i=1}^{ncol}T_{ti}  
+$$

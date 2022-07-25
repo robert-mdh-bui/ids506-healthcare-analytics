@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<AlteryxDocument yxmdVer="2021.4">
+  <Nodes>
+    <Node ToolID="1">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileInput.DbFileInput">
+        <Position x="54" y="54" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <Passwords />
+          <File RecordLimit="" SearchSubDirs="False" FileFormat="0" OutputFileName="">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv</File>
+          <FormatSpecificOptions>
+            <HeaderRow>True</HeaderRow>
+            <IgnoreErrors>False</IgnoreErrors>
+            <AllowShareWrite>False</AllowShareWrite>
+            <ImportLine>1</ImportLine>
+            <FieldLen>254</FieldLen>
+            <SingleThreadRead>False</SingleThreadRead>
+            <IgnoreQuotes>DoubleQuotes</IgnoreQuotes>
+            <Delimeter>,</Delimeter>
+            <QuoteRecordBreak>False</QuoteRecordBreak>
+            <CodePage>28591</CodePage>
+          </FormatSpecificOptions>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>all_claims.csv</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+        <MetaInfo connection="Output">
+          <RecordInfo>
+            <Field name="Average Medicare Allowed Amount" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Average Medicare Payment Amount" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Average Medicare Standardized Amount" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Average Submitted Charge Amount" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="City" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Country Code" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Credentials" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Entity Code" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="First Name" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Fraud_Label" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Gender" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="HCPCS Code" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="HCPCS Description" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="HCPCS Drug Indicator" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Last Name/Organization Name" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Medicare Participation" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Middle Initial" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="National Provider Identifier" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Number of Medicare Beneficiaries" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Number of Medicare Beneficiary/Day Services" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Number of Services" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Place of Service" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Provider Type" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Right_National Provider Identifier" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Standard Deviation of Medicare Allowed Amount" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Standard Deviation of Medicare Payment Amount" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Standard Deviation of Submitted Charge Amount" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="State Code" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Street Address 1" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Street Address 2" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+            <Field name="Zip Code" size="254" source="File: G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\all_claims.csv" type="V_String" />
+          </RecordInfo>
+        </MetaInfo>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileInput" />
+    </Node>
+    <Node ToolID="2">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.Unique.Unique">
+        <Position x="179" y="54" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <UniqueFields>
+            <Field field="HCPCS Code" />
+            <Field field="National Provider Identifier" />
+          </UniqueFields>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxUnique" />
+    </Node>
+    <Node ToolID="3">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.AlteryxSelect.AlteryxSelect">
+        <Position x="304" y="54" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <OrderChanged value="False" />
+          <CommaDecimal value="False" />
+          <SelectFields>
+            <SelectField field="Average Medicare Allowed Amount" selected="True" type="Float" size="4" />
+            <SelectField field="Average Medicare Payment Amount" selected="True" type="Float" size="4" />
+            <SelectField field="Average Medicare Standardized Amount" selected="False" />
+            <SelectField field="Average Submitted Charge Amount" selected="True" type="Float" size="4" />
+            <SelectField field="Number of Medicare Beneficiaries" selected="True" type="Float" size="4" />
+            <SelectField field="Number of Medicare Beneficiary/Day Services" selected="True" type="Float" size="4" />
+            <SelectField field="Number of Services" selected="True" type="Float" size="4" />
+            <SelectField field="Standard Deviation of Medicare Allowed Amount" selected="True" type="Float" size="4" />
+            <SelectField field="Standard Deviation of Medicare Payment Amount" selected="True" type="Float" size="4" />
+            <SelectField field="Standard Deviation of Submitted Charge Amount" selected="True" type="Float" size="4" />
+            <SelectField field="Avg_Allowance_Ratio" selected="False" type="Float" size="4" />
+            <SelectField field="Avg_Excess_amount_claimed" selected="False" type="Float" size="4" />
+            <SelectField field="Avg_Final_amount_received" selected="False" type="Float" size="4" />
+            <SelectField field="Avg_Number of Medicare Beneficiaries" selected="False" type="Float" size="4" />
+            <SelectField field="Avg_Number of Medicare Beneficiary/Day Services" selected="False" type="Float" size="4" />
+            <SelectField field="Avg_Payout_Ratio" selected="False" type="Float" size="4" />
+            <SelectField field="Count_HCPCS" selected="False" type="Float" size="4" />
+            <SelectField field="Max_Allowance_Ratio" selected="False" type="Float" size="4" />
+            <SelectField field="Max_Payout_Ratio" selected="False" type="Float" size="4" />
+            <SelectField field="Min_Allowance_Ratio" selected="False" type="Float" size="4" />
+            <SelectField field="Min_Payout_Ratio" selected="False" type="Float" size="4" />
+            <SelectField field="Sum_Total_amount_allowed" selected="False" type="Float" size="4" />
+            <SelectField field="Sum_Total_amount_claimed" selected="False" type="Float" size="4" />
+            <SelectField field="Sum_Total_amount_paid" selected="False" type="Float" size="4" />
+            <SelectField field="*Unknown" selected="True" />
+          </SelectFields>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxSelect" />
+    </Node>
+    <Node ToolID="4">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.Formula.Formula">
+        <Position x="428" y="54" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <FormulaFields>
+            <FormulaField expression="[Number of Medicare Beneficiary/Day Services]*[Average Submitted Charge Amount]" field="Total_amount_claimed" size="4" type="Float" />
+            <FormulaField expression="[Number of Medicare Beneficiary/Day Services]*[Average Medicare Payment Amount]" field="Total_amount_paid" size="4" type="Float" />
+            <FormulaField expression="[Number of Medicare Beneficiary/Day Services]*[Average Medicare Allowed Amount]" field="Total_amount_allowed" size="4" type="Float" />
+            <FormulaField expression="[Average Medicare Payment Amount]/[Average Submitted Charge Amount]" field="Payout_Ratio" size="4" type="Float" />
+            <FormulaField expression="[Average Medicare Allowed Amount]/[Average Submitted Charge Amount]" field="Allowance_Ratio" size="4" type="Float" />
+            <FormulaField expression="[Total_amount_claimed]-[Total_amount_paid]" field="Final_amount_received" size="4" type="Float" />
+            <FormulaField expression="[Total_amount_claimed]-[Total_amount_allowed]" field="Excess_amount_claimed" size="4" type="Float" />
+          </FormulaFields>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>Total_amount_claimed = [Number of Medicare Beneficiary/Day Services]*[Average Su...</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxFormula" />
+    </Node>
+    <Node ToolID="5">
+      <GuiSettings Plugin="AlteryxSpatialPluginsGui.Summarize.Summarize">
+        <Position x="553" y="54" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <SummarizeFields>
+            <SummarizeField field="National Provider Identifier" action="GroupBy" rename="National Provider Identifier" />
+            <SummarizeField field="Gender" action="GroupBy" rename="Gender" />
+            <SummarizeField field="Provider Type" action="GroupBy" rename="Provider Type" />
+            <SummarizeField field="HCPCS Code" action="Count" rename="Count_HCPCS" />
+            <SummarizeField field="Payout_Ratio" action="Avg" rename="Avg_Payout_Ratio" />
+            <SummarizeField field="Allowance_Ratio" action="Avg" rename="Avg_Allowance_Ratio" />
+            <SummarizeField field="Final_amount_received" action="Avg" rename="Avg_Final_amount_received" />
+            <SummarizeField field="Excess_amount_claimed" action="Avg" rename="Avg_Excess_amount_claimed" />
+            <SummarizeField field="Number of Medicare Beneficiaries" action="Avg" rename="Avg_Number of Medicare Beneficiaries" />
+            <SummarizeField field="Number of Medicare Beneficiary/Day Services" action="Avg" rename="Avg_Number of Medicare Beneficiary/Day Services" />
+            <SummarizeField field="Total_amount_claimed" action="Sum" rename="Sum_Total_amount_claimed" />
+            <SummarizeField field="Total_amount_paid" action="Sum" rename="Sum_Total_amount_paid" />
+            <SummarizeField field="Total_amount_allowed" action="Sum" rename="Sum_Total_amount_allowed" />
+            <SummarizeField field="Fraud_Label" action="GroupBy" rename="Fraud_Label" />
+          </SummarizeFields>
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText />
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxSpatialPluginsEngine.dll" EngineDllEntryPoint="AlteryxSummarize" />
+    </Node>
+    <Node ToolID="6">
+      <GuiSettings Plugin="AlteryxBasePluginsGui.DbFileOutput.DbFileOutput">
+        <Position x="678" y="54" />
+      </GuiSettings>
+      <Properties>
+        <Configuration>
+          <File MaxRecords="" FileFormat="0">G:\My Drive\academics\2122_uic_ms\2022_spring\ids506_health\medicare_fraud\data\alteryx_out\physician_level_aggregate.csv</File>
+          <Passwords />
+          <FormatSpecificOptions>
+            <LineEndStyle>CRLF</LineEndStyle>
+            <Delimeter>,</Delimeter>
+            <ForceQuotes>False</ForceQuotes>
+            <HeaderRow>True</HeaderRow>
+            <CodePage>28591</CodePage>
+            <WriteBOM>True</WriteBOM>
+          </FormatSpecificOptions>
+          <MultiFile value="False" />
+        </Configuration>
+        <Annotation DisplayMode="0">
+          <Name />
+          <DefaultAnnotationText>physician_level_aggregate.csv</DefaultAnnotationText>
+          <Left value="False" />
+        </Annotation>
+      </Properties>
+      <EngineSettings EngineDll="AlteryxBasePluginsEngine.dll" EngineDllEntryPoint="AlteryxDbFileOutput" />
+    </Node>
+  </Nodes>
+  <Connections>
+    <Connection>
+      <Origin ToolID="1" Connection="Output" />
+      <Destination ToolID="2" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="2" Connection="Unique" />
+      <Destination ToolID="3" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="3" Connection="Output" />
+      <Destination ToolID="4" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="4" Connection="Output" />
+      <Destination ToolID="5" Connection="Input" />
+    </Connection>
+    <Connection>
+      <Origin ToolID="5" Connection="Output" />
+      <Destination ToolID="6" Connection="Input" />
+    </Connection>
+  </Connections>
+  <Properties>
+    <Memory default="True" />
+    <GlobalRecordLimit value="0" />
+    <TempFiles default="True" />
+    <Annotation on="True" includeToolName="False" />
+    <ConvErrorLimit value="10" />
+    <ConvErrorLimit_Stop value="False" />
+    <CancelOnError value="False" />
+    <DisableBrowse value="False" />
+    <EnablePerformanceProfiling value="False" />
+    <PredictiveToolsCodePage value="1252" />
+    <DisableAllOutput value="False" />
+    <ShowAllMacroMessages value="False" />
+    <ShowConnectionStatusIsOn value="True" />
+    <ShowConnectionStatusOnlyWhenRunning value="True" />
+    <ZoomLevel value="0" />
+    <LayoutType>Horizontal</LayoutType>
+    <MetaInfo>
+      <NameIsFileName value="True" />
+      <Name>curate</Name>
+      <Description />
+      <RootToolName />
+      <ToolVersion />
+      <ToolInDb value="False" />
+      <CategoryName />
+      <SearchTags />
+      <Author />
+      <Company />
+      <Copyright />
+      <DescriptionLink actual="" displayed="" />
+      <Example>
+        <Description />
+        <File />
+      </Example>
+      <WorkflowId value="5ef24650-a8db-4c10-9106-cdf767596750" />
+      <Telemetry>
+        <PreviousWorkflowId value="7fc49c52-f024-4b9c-9c1a-0022cec8576a" />
+        <OriginWorkflowId value="7fc49c52-f024-4b9c-9c1a-0022cec8576a" />
+      </Telemetry>
+    </MetaInfo>
+    <Events>
+      <Enabled value="True" />
+    </Events>
+  </Properties>
+</AlteryxDocument>

@@ -1,0 +1,508 @@
+---
+title: "Regression Modeling"
+output: html_document
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1920px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+# Import packages
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(janitor)
+library(readxl)
+library(gt)
+library(ggridges)
+library(lm.beta)
+
+options(scipen=999)
+```
+
+# Import data 
+
+```{r message=FALSE, warning=FALSE}
+# Data import (will load selector widget to choose local file)
+xlsx_import <- read_excel(file.choose(),sheet = "data")
+```
+
+# Cleaning data
+
+```{r message=FALSE, warning=FALSE}
+# Data cleaning step
+dat <- xlsx_import %>% 
+  select(-c(url,url_id,transcript)) %>% 
+  clean_names() %>% 
+  mutate(
+    
+    # Parsing video length string as number of seconds
+    vlength_s = str_match(video_length,"\\d+$") %>% as.integer(),
+    vlength_m = str_match(str_remove(video_length,":\\d+$"),"\\d+$") %>% as.integer(),
+    vlength_h = str_remove(video_length,"\\d+:\\d+$") %>% str_remove(":") %>% as.integer(),
+    vlength_h = ifelse(is.na(vlength_h),0,vlength_h),
+    video_length = (vlength_s + vlength_m*60 + vlength_h*3600)/60,
+    
+    # Parsing missing values in sub count, negative comment count, and neutral comment count as 0
+    subs_count = subs_count %>% as.integer(),
+    subs_count = ifelse(is.na(subs_count),0,subs_count),
+    
+    cmt_negative_n = cmt_negative_n %>% as.integer(),
+    cmt_negative_n = ifelse(is.na(cmt_negative_n),0,cmt_negative_n),
+    
+    cmt_neutral_n = cmt_neutral_n %>% as.integer(),
+    cmt_neutral_n = ifelse(is.na(cmt_neutral_n),0,cmt_neutral_n)
+    ) %>% 
+  select(-c(vlength_s,vlength_m,vlength_h)) 
+
+# parsing transcript emotion data to most prominent emotion
+text_emotions <- dat %>% 
+  select(video_id,starts_with("text")) %>% 
+  pivot_longer(cols = starts_with("text"),
+               names_to = "names",
+               values_to = "val") %>% 
+  group_by(video_id) %>% 
+  filter(val == max(val)) %>% 
+  transmute(
+    video_id = video_id,
+    prom_text_emote = str_replace(names,"text_"," ")
+  )
+
+dat <- dat %>% left_join(text_emotions)
+```
+
+# Plotting
+
+```{r}
+dat %>% 
+  filter(gender != 2) %>% 
+  mutate(subs_count = (subs_count+1)) %>% 
+  ggplot()+
+  geom_density_ridges(aes(x = subs_count, 
+                          y = factor(gender),
+                          fill = factor(gender),
+                          col = factor(gender)),
+                      alpha = .5)+
+  theme_minimal()+
+  labs(x = "Subscriber Count (log scale)",
+       y = "Density",
+       col = "Gender",
+       fill = "Gender")+
+  scale_x_log10()+
+  scale_fill_viridis_d()+
+  scale_color_viridis_d()
+```
+
+```{r}
+draw_density_plot_c <- function(dframe,var,log=0){
+  if(log == 0){
+    plot <- dframe %>% 
+      mutate(xvar = !!sym(var)) %>% 
+      ggplot()+
+      aes(x = xvar)+
+      geom_histogram(fill = "#21918c",
+                     col  = "#21918c",
+                     alpha = .75,
+                     bins = 30)+
+      theme_minimal()+
+      labs(x = paste(var,"density (20 bins)"),
+           y = "Count")
+  }else if(log == 1){
+    plot <- dframe %>% 
+      mutate(xvar = !!sym(var) + 1) %>% 
+      ggplot()+
+      aes(x = xvar)+
+      geom_histogram(fill = "#21918c",
+                     col  = "#21918c",
+                     alpha = .75,
+                     bins = 30)+
+      theme_minimal()+
+      scale_x_log10()+
+      labs(x = paste(var,"density (logscale + 20 bins)"),
+           y = "Count")
+  }
+  
+  return(plot)
+}
+
+
+cols_d <- dat %>% select(-c(video_id,
+                         covid_period,
+                         gender,
+                         people_in_video)) %>% 
+  select(-starts_with(c("prom","topic","emote"))) %>% 
+  colnames()
+
+```
+
+```{r}
+draw_density_plot_c(dat,"video_length")
+draw_density_plot_c(dat,"subs_count",1)
+draw_density_plot_c(dat,"n_likes",1)
+draw_density_plot_c(dat,"n_views",1)
+draw_density_plot_c(dat,"cmt_n",1)
+draw_density_plot_c(dat,"cmt_wordcount",1)
+draw_density_plot_c(dat,"cmt_nltk_sentiment")
+
+# These are fluff
+#draw_density_plot_c(dat,"cmt_positive_n")
+#draw_density_plot_c(dat,"cmt_positive_mean")
+#draw_density_plot_c(dat,"cmt_positive_med")
+#draw_density_plot_c(dat,"cmt_negative_n")
+#draw_density_plot_c(dat,"cmt_negative_mean")
+#draw_density_plot_c(dat,"cmt_negative_med")
+#draw_density_plot_c(dat,"cmt_neutral_n")
+#draw_density_plot_c(dat,"cmt_neutral_mean")
+#draw_density_plot_c(dat,"cmt_neutral_med")
+
+```
+
+
+# Modeling function
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Function to get coef + sig table for an x df, a y df, and a selected variable string
+f.linreg <- function(dfx,dfy,yvar){
+  
+  # Joining x and y frames
+  df_temp <-
+    dfy %>% 
+    select(video_id, y = !!sym(yvar)) %>% 
+    left_join(dfx, by = 'video_id') %>% 
+    select(-video_id)
+  
+  # Fit model
+  model_temp <- lm(y~.,
+                   data = df_temp#, singular.ok = FALSE
+                   )
+  
+  # Extract coefficients
+  coefs_temp <- model_temp$coefficients %>% as.data.frame()
+  pvals_temp <- summary(model_temp)$coefficients[,4] %>% as.data.frame()
+  
+  
+  colnames(coefs_temp) <- paste('coef')
+  colnames(pvals_temp) <- "p"
+    
+  # Converting p-values to asterisk significance notation
+  pvals_temp <- pvals_temp %>% mutate(p = case_when(p <= .001 ~ "*",
+                                                    p <= .01  ~ "**",
+                                                    p <= .05  ~ "***",
+                                                    p > .05   ~ " "))
+
+  # Binding coefficients and stat.sig frames
+  output <- coefs_temp %>% rownames_to_column("Feature") %>% 
+    left_join(pvals_temp %>% rownames_to_column("Feature")) %>% 
+    transmute(Feature,
+              coef = paste(round(coef,digits=3),p))
+  
+  colnames(output) <- c("Feature",yvar)
+  return(output)
+}
+
+f.linreg.s <- function(dfx,dfy,yvar){
+  
+  # Joining x and y frames
+  df_temp <-
+    dfy %>% 
+    select(video_id, y = !!sym(yvar)) %>% 
+    left_join(dfx, by = 'video_id') %>% 
+    select(-video_id)
+  
+  # Fit model
+  model_temp <- lm(y~.,
+                   data = df_temp#, singular.ok = FALSE
+                   )
+  
+  b = lm.beta(model_temp)
+  
+  coefs_temp <- b$standardized.coefficients %>% as.data.frame()
+  pvals_temp <- summary(model_temp)$coefficients[,4] %>% as.data.frame()
+  
+  
+  colnames(coefs_temp) <- paste('coef')
+  colnames(pvals_temp) <- "p"
+    
+  # Converting p-values to asterisk significance notation
+  pvals_temp <- pvals_temp %>% mutate(p = case_when(p <= .001 ~ "*",
+                                                    p <= .01  ~ "**",
+                                                    p <= .05  ~ "***",
+                                                    p > .05   ~ " "))
+
+  # Binding coefficients and stat.sig frames
+  output <- coefs_temp %>% rownames_to_column("Feature") %>% 
+    left_join(pvals_temp %>% rownames_to_column("Feature")) %>% 
+    transmute(Feature,
+              coef = paste(round(coef,digits=3),p))
+  
+  colnames(output) <- c("Feature",yvar)
+  return(output)
+}
+```
+
+# Without FER data
+## Separating into Features and Target Variables
+
+```{r message=FALSE, warning=FALSE}
+# Removing FER emotion scores
+dat_no_emote <- dat %>% 
+  select(-starts_with("emote")) %>% 
+  select(-c(prom_emote)) %>% 
+  select(-starts_with("topic"))
+
+# Separating into one df for target vars and one for feature vars
+df_y <- dat_no_emote %>% select(video_id,n_likes,n_views,starts_with("cmt_"),starts_with('proportion'))
+df_x <- dat_no_emote %>% select(-c(n_likes,n_views),-starts_with("cmt_"),-starts_with('proportion'),-starts_with("text"))
+```
+
+## Applying modeling function to Target Variables
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+y_names <- colnames(df_y) %>% as.vector()
+y_names = y_names[y_names!='video_id']
+
+for(i in 1:length(y_names)){
+  var = y_names[i]
+  if(i == 1){
+    df0 = f.linreg(df_x,df_y,var)
+  }else{
+    dfn = f.linreg(df_x,df_y,var)
+    df0 <- left_join(df0,dfn,by = 'Feature')
+    rm(dfn)
+  }
+}
+
+for(i in 1:length(y_names)){
+  var = y_names[i]
+  if(i == 1){
+    df0_standard = f.linreg.s(df_x,df_y,var)
+  }else{
+    dfn = f.linreg.s(df_x,df_y,var)
+    df0_standard <- left_join(df0_standard,dfn,by = 'Feature')
+    rm(dfn)
+  }
+}
+
+```
+
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE}
+builder <- function(x, Limit){cells_body(columns = !!sym(x), rows = str_detect(!!sym(x),"\\*"))}
+
+gt0 <- df0 %>% 
+  # select(!matches("_mean")) %>%  
+  # select(!matches("med")) %>% 
+  mutate(across(where(is.numeric), ~ round(., 3))) %>% 
+  gt(rowname_col = "Feature") %>% 
+  tab_header(title = "Unstandardized Regression Coefficients for all Target Variables",
+             subtitle = "without Facial Emotion Recognition (FER)") %>% 
+  tab_stubhead(label = "Feature") %>% 
+  tab_style(
+     locations = cells_column_labels(columns = everything()),
+     style     = list(
+       #Give a thick border below
+       cell_borders(sides = "bottom", weight = px(2)),
+       #Make text bold
+       cell_text(weight = "bold")
+     )
+  ) %>% 
+  tab_style(
+     locations = lapply(colnames(df0 %>% select(-Feature)),builder),
+     style     = list(
+       #Make text bold
+       cell_text(weight = "bold")
+     )
+  ) %>% 
+  #Apply different style to the title
+  tab_style(
+    locations = cells_title(groups = "title"),
+    style     = list(cell_text(weight = "bold", size = 24))
+  ) %>% 
+  opt_all_caps() %>% 
+  opt_table_font(
+    font = list(google_font("Raleway"),
+                default_fonts())
+  )
+
+gt0_standard <- df0_standard %>% 
+  # select(!matches("_mean")) %>%  
+  # select(!matches("med")) %>% 
+  mutate(across(where(is.numeric), ~ round(., 3))) %>% 
+  gt(rowname_col = "Feature") %>% 
+  tab_header(title = "Standardized Regression Coefficients for all Target Variables",
+             subtitle = "without Facial Emotion Recognition (FER)") %>% 
+  tab_stubhead(label = "Feature") %>% 
+  tab_style(
+     locations = cells_column_labels(columns = everything()),
+     style     = list(
+       #Give a thick border below
+       cell_borders(sides = "bottom", weight = px(2)),
+       #Make text bold
+       cell_text(weight = "bold")
+     )
+  ) %>% 
+  tab_style(
+     locations = lapply(colnames(df0_standard %>% select(-Feature)),builder),
+     style     = list(
+       #Make text bold
+       cell_text(weight = "bold")
+     )
+  ) %>% 
+  #Apply different style to the title
+  tab_style(
+    locations = cells_title(groups = "title"),
+    style     = list(cell_text(weight = "bold", size = 24))
+  ) %>% 
+  opt_all_caps() %>% 
+  opt_table_font(
+    font = list(google_font("Raleway"),
+                default_fonts())
+  )
+```
+
+## Printing + saving summary tables
+```{r}
+gtsave(gt0,"regression_outputs_no_FER.html")
+gtsave(gt0_standard,"regression_outputs_no_FER_standardized.html")
+
+gt0
+gt0_standard
+```
+
+# With FER data
+## Separating into Features and Target Variables
+
+```{r message=FALSE, warning=FALSE}
+# Removing FER emotion scores
+dat_w_emote <- dat %>% 
+  select(-starts_with("emote")) %>% 
+  select(-starts_with("topic")) %>% 
+  select(-people_in_video) %>% 
+  mutate(prom_emote = str_replace(prom_emote,"^emote_","")) %>% 
+  filter(!is.na(prom_emote))
+
+# Separating into one df for target vars and one for feature vars
+df_y_em <- dat_w_emote %>% select(video_id,n_likes,n_views,starts_with("cmt_"),starts_with("proportion"))
+df_x_em <- dat_w_emote %>% select(-c(n_likes,n_views),-starts_with("cmt_"),-starts_with("proportion"),-starts_with('text'))
+```
+
+```{r}
+intersect(colnames(df_y_em),
+          colnames(df_x_em))
+```
+
+
+## Applying modeling function to Target Variables
+
+```{r}
+y_names_em <- colnames(df_y_em) %>% as.vector()
+y_names_em = y_names_em[y_names_em!='video_id']
+
+for(i in 1:length(y_names_em)){
+  var = y_names_em[i]
+  if(i == 1){
+    df1 = f.linreg(df_x_em,df_y_em,var)
+  }else{
+    dfn = f.linreg(df_x_em,df_y_em,var)
+    df1 <- left_join(df1,dfn,by = 'Feature')
+    rm(dfn)
+  }
+}
+
+for(i in 1:length(y_names_em)){
+  var = y_names_em[i]
+  if(i == 1){
+    df1_standard = f.linreg.s(df_x_em,df_y_em,var)
+  }else{
+    dfn = f.linreg.s(df_x_em,df_y_em,var)
+    df1_standard <- left_join(df1_standard,dfn,by = 'Feature')
+    rm(dfn)
+  }
+}
+
+
+gt1 <- df1 %>% 
+  # select(!matches("_mean")) %>%  
+  # select(!matches("med")) %>% 
+  mutate(across(where(is.numeric), ~ round(., 3))) %>% 
+  gt(rowname_col = "Feature") %>% 
+  tab_header(title = "Unstandardized Regression Coefficients for all Target Variables",
+             subtitle = "with Facial Emotion Recognition (FER)") %>% 
+  tab_stubhead(label = "Feature") %>% 
+  tab_style(
+     locations = cells_column_labels(columns = everything()),
+     style     = list(
+       #Give a thick border below
+       cell_borders(sides = "bottom", weight = px(2)),
+       #Make text bold
+       cell_text(weight = "bold")
+     )
+  ) %>% 
+  tab_style(
+     locations = lapply(colnames(df1 %>% select(-Feature)),builder),
+     style     = list(
+       #Make text bold
+       cell_text(weight = "bold")
+     )
+  ) %>% 
+  #Apply different style to the title
+  tab_style(
+    locations = cells_title(groups = "title"),
+    style     = list(cell_text(weight = "bold", size = 24))
+  ) %>% 
+  opt_all_caps() %>% 
+  opt_table_font(
+    font = list(google_font("Raleway"),
+                default_fonts())
+  )
+
+gt1_standard <- df1_standard %>% 
+  # select(!matches("_mean")) %>%  
+  # select(!matches("med")) %>% 
+  mutate(across(where(is.numeric), ~ round(., 3))) %>% 
+  gt(rowname_col = "Feature") %>% 
+  tab_header(title = "Standardized Regression Coefficients for all Target Variables",
+             subtitle = "with Facial Emotion Recognition (FER)") %>% 
+  tab_stubhead(label = "Feature") %>% 
+  tab_style(
+     locations = cells_column_labels(columns = everything()),
+     style     = list(
+       #Give a thick border below
+       cell_borders(sides = "bottom", weight = px(2)),
+       #Make text bold
+       cell_text(weight = "bold")
+     )
+  ) %>% 
+  tab_style(
+     locations = lapply(colnames(df1_standard %>% select(-Feature)),builder),
+     style     = list(
+       #Make text bold
+       cell_text(weight = "bold")
+     )
+  ) %>% 
+  #Apply different style to the title
+  tab_style(
+    locations = cells_title(groups = "title"),
+    style     = list(cell_text(weight = "bold", size = 24))
+  ) %>% 
+  opt_all_caps() %>% 
+  opt_table_font(
+    font = list(google_font("Raleway"),
+                default_fonts())
+  )
+
+```
+
+## Printing + saving summary tables
+
+```{r}
+gtsave(gt1,"regression_outputs_w_FER.html")
+gtsave(gt1_standard,"regression_outputs_w_FER_standardized.html")
+
+gt1
+gt1_standard
+```
