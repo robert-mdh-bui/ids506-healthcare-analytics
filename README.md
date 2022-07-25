@@ -5,7 +5,7 @@ ___
 - Spring 2022, T 3-5:45 PM 
 - Dr. Ranganathan Chandrasekaran
 - University of Illinois at Chicago, Liautaud Graduate Business School
-
+- Information and Decision Sciences Department, IDS.506
 ___
 ## Overview of Projects and Subdirectories
 
