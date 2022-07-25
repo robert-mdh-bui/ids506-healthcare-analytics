@@ -1,4 +1,4 @@
-# 2 [Predicting 7-yr Prostate Cancer Survival with Machine Learning in R](https://github.com/robert-mdh-bui/ids506-healthcare-analytics/tree/main/prostate)
+# [Predicting 7-yr Prostate Cancer Survival with Machine Learning in R](https://github.com/robert-mdh-bui/ids506-healthcare-analytics/tree/main/prostate)
 
 ## Context: 
 - This ML project and report is created as part of experiential learning at University of Illinois - Chicago, Liautaud Graduate Business School, course IDS.506 Healthcare Analytics.
